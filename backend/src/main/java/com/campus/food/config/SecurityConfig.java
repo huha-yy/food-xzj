@@ -67,7 +67,25 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
-                                // Swagger UI 和 Knife4j 相关路径
+                                // 公开API：菜品列表、推荐接口等（首页展示用）
+                                "/api/foods/**",
+                                "/api/recommend/**",
+                                "/api/merchants/**",
+                                // 评价相关接口（需要认证，但由@PreAuthorize控制）
+                                "/api/reviews/**",
+                                // 公告相关接口（需要认证，但由@PreAuthorize控制）
+                                "/api/announcement/**",
+                                // 活动相关接口（需要认证，但由@PreAuthorize控制）
+                                "/api/activity/**",
+                                // 收藏相关接口（需要认证，但由@PreAuthorize控制）
+                                "/api/collections/**",
+                                // 文件上传接口（需要认证）
+                                "/api/upload/**",
+                                // 用户相关接口（需要认证，但由@PreAuthorize控制）
+                                "/api/user/**",
+                                // 管理员接口（需要认证，但由@PreAuthorize控制）
+                                "/api/admin/**",
+                                // Swagger UI and Knife4j 相关路径
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",

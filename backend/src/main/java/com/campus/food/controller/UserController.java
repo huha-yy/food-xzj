@@ -1,7 +1,9 @@
 package com.campus.food.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.campus.food.common.result.Result;
 import com.campus.food.dto.UpdateUserDTO;
+import com.campus.food.dto.UserQueryDTO;
 import com.campus.food.service.UserService;
 import com.campus.food.security.SecurityUser;
 import com.campus.food.vo.UserVO;
@@ -23,6 +25,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/list")
+    @Operation(summary = "查询用户列表", description = "管理员查询用户列表，支持分页和筛选")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Result<IPage<UserVO>> getUserList(UserQueryDTO userQueryDTO) {
+        IPage<UserVO> userVOPage = userService.getUserList(userQueryDTO);
+        return Result.success(userVOPage);
+    }
 
     @GetMapping("/info")
     @Operation(summary = "查询用户信息", description = "根据用户ID查询用户信息和资料")

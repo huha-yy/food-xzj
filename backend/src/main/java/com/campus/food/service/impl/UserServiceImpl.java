@@ -1,7 +1,11 @@
 package com.campus.food.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.campus.food.dto.UpdateUserDTO;
+import com.campus.food.dto.UserQueryDTO;
 import com.campus.food.entity.User;
 import com.campus.food.entity.UserProfile;
 import com.campus.food.exception.BusinessException;
@@ -13,17 +17,66 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * 用户服务实现
  */
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private final UserMapper userMapper;
     private final UserProfileMapper userProfileMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public IPage<UserVO> getUserList(UserQueryDTO userQueryDTO) {
+        // 1. 构建分页对象
+        Page<User> page = new Page<>(
+                userQueryDTO.getCurrent() != null ? userQueryDTO.getCurrent() : 1,
+                userQueryDTO.getPageSize() != null ? userQueryDTO.getPageSize() : 10
+        );
+
+        // 2. 构建查询条件
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        
+        // 按用户名模糊查询
+        if (StringUtils.hasText(userQueryDTO.getKeyword())) {
+            wrapper.like(User::getUsername, userQueryDTO.getKeyword());
+        }
+        
+        // 按角色筛选
+        if (StringUtils.hasText(userQueryDTO.getRole())) {
+            wrapper.eq(User::getRole, userQueryDTO.getRole());
+        }
+        
+        // 按状态筛选
+        if (StringUtils.hasText(userQueryDTO.getStatus())) {
+            wrapper.eq(User::getStatus, userQueryDTO.getStatus());
+        }
+        
+        // 按创建时间倒序
+        wrapper.orderByDesc(User::getCreateTime);
+
+        // 3. 查询用户列表
+        IPage<User> resultPage = userMapper.selectPage(page, wrapper);
+
+        // 4. 转换为UserVO
+        return resultPage.convert(user -> UserVO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .nickname(user.getUsername())
+                .avatar(null)
+                .phone(null)
+                .studentNo(null)
+                .createTime(user.getCreateTime().toString())
+                .updateTime(user.getUpdateTime().toString())
+                .build()
+        );
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
