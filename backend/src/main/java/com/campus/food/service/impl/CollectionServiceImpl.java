@@ -60,25 +60,49 @@ public class CollectionServiceImpl extends ServiceImpl<CollectionMapper, Collect
             }
         }
 
-        // 3. 检查是否已收藏
+        // 3. 检查是否已收藏（只查询未删除的记录）
         LambdaQueryWrapper<Collection> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collection::getUserId, userId);
         wrapper.eq(Collection::getType, createCollectionDTO.getType());
         wrapper.eq(Collection::getTargetId, createCollectionDTO.getTargetId());
+        wrapper.eq(Collection::getIsDeleted, 0); // 只查询未删除的记录
         Collection existCollection = collectionMapper.selectOne(wrapper);
         if (existCollection != null) {
             throw new BusinessException(4000, "已收藏，不能重复收藏");
         }
 
-        // 4. 创建收藏
-        Collection collection = new Collection();
-        collection.setUserId(userId);
-        collection.setType(createCollectionDTO.getType());
-        collection.setTargetId(createCollectionDTO.getTargetId());
-        collectionMapper.insert(collection);
+        // 4. 尝试创建收藏，如果失败（唯一索引冲突）则物理删除旧记录后重试
+        try {
+            Collection collection = new Collection();
+            collection.setUserId(userId);
+            collection.setType(createCollectionDTO.getType());
+            collection.setTargetId(createCollectionDTO.getTargetId());
+            collectionMapper.insert(collection);
 
-        // 5. 返回收藏ID
-        return collection.getId();
+            // 5. 返回收藏ID
+            return collection.getId();
+        } catch (Exception e) {
+            // 如果是唯一索引冲突，说明存在已逻辑删除的记录，先物理删除再插入
+            if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+                // 使用原生 SQL 查找旧记录（包括已删除的）
+                Collection oldCollection = collectionMapper.findByUserAndTypeAndTargetIgnoreDeleted(
+                        userId, createCollectionDTO.getType(), createCollectionDTO.getTargetId());
+
+                if (oldCollection != null) {
+                    // 物理删除旧记录
+                    collectionMapper.physicalDeleteById(oldCollection.getId());
+                    // 重新插入
+                    Collection collection = new Collection();
+                    collection.setUserId(userId);
+                    collection.setType(createCollectionDTO.getType());
+                    collection.setTargetId(createCollectionDTO.getTargetId());
+                    collectionMapper.insert(collection);
+                    return collection.getId();
+                }
+            }
+            // 其他异常继续抛出
+            throw e;
+        }
     }
 
     @Override
@@ -132,19 +156,31 @@ public class CollectionServiceImpl extends ServiceImpl<CollectionMapper, Collect
         Map<Long, String> avatarMap = userIds.isEmpty() ? Map.of() :
                 userProfileMapper.selectList(new LambdaQueryWrapper<UserProfile>()
                                 .in(UserProfile::getUserId, userIds)).stream()
-                        .collect(Collectors.toMap(UserProfile::getUserId, UserProfile::getAvatar));
+                        .collect(Collectors.toMap(
+                                UserProfile::getUserId,
+                                profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> shopNameMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
                         .collect(Collectors.toMap(Merchant::getId, Merchant::getShopName));
         Map<Long, String> imageMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
-                        .collect(Collectors.toMap(Merchant::getId, Merchant::getCoverImage));
+                        .collect(Collectors.toMap(
+                                Merchant::getId,
+                                merchant -> merchant.getCoverImage() != null ? merchant.getCoverImage() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> foodNameMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
                         .collect(Collectors.toMap(Food::getId, Food::getName));
         Map<Long, String> foodImageMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
-                        .collect(Collectors.toMap(Food::getId, Food::getImageUrl));
+                        .collect(Collectors.toMap(
+                                Food::getId,
+                                food -> food.getImageUrl() != null ? food.getImageUrl() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, BigDecimal> priceMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
                         .collect(Collectors.toMap(Food::getId, Food::getPrice));

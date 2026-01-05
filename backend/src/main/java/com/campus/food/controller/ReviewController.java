@@ -39,7 +39,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "删除评价")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Void> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -80,7 +80,7 @@ public class ReviewController {
 
     @PostMapping("/{reviewId}/like")
     @Operation(summary = "点赞")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> likeReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -91,7 +91,7 @@ public class ReviewController {
 
     @PostMapping("/{reviewId}/dislike")
     @Operation(summary = "踩")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> dislikeReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -102,7 +102,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}/interaction")
     @Operation(summary = "取消点赞/踩")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> cancelInteraction(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser

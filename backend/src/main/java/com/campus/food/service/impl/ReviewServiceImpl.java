@@ -190,9 +190,13 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             wrapper.eq(Review::getUserId, reviewQueryDTO.getUserId());
         }
 
-        // 6. 按审核状态筛选
-        if (reviewQueryDTO.getAuditStatus() != null) {
-            wrapper.eq(Review::getAuditStatus, reviewQueryDTO.getAuditStatus());
+        // 6. 按审核状态筛选（默认只查询已审核通过的评价）
+        String auditStatus = reviewQueryDTO.getAuditStatus();
+        if (auditStatus != null) {
+            wrapper.eq(Review::getAuditStatus, auditStatus);
+        } else {
+            // 默认只显示已审核通过的评价
+            wrapper.eq(Review::getAuditStatus, "APPROVED");
         }
 
         // 7. 排序：按创建时间倒序
@@ -212,17 +216,33 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         // 10. 批量查询
         Map<Long, String> usernameMap = userIds.isEmpty() ? Map.of() :
                 userMapper.selectBatchIds(userIds).stream()
-                        .collect(Collectors.toMap(User::getId, User::getUsername));
+                        .collect(Collectors.toMap(
+                                User::getId,
+                                user -> user.getUsername() != null ? user.getUsername() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> avatarMap = userIds.isEmpty() ? Map.of() :
                 userProfileMapper.selectList(new LambdaQueryWrapper<UserProfile>()
                                 .in(UserProfile::getUserId, userIds)).stream()
-                        .collect(Collectors.toMap(UserProfile::getUserId, UserProfile::getAvatar));
+                        .collect(Collectors.toMap(
+                                UserProfile::getUserId,
+                                profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> foodNameMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
-                        .collect(Collectors.toMap(Food::getId, Food::getName));
+                        .collect(Collectors.toMap(
+                                Food::getId,
+                                food -> food.getName() != null ? food.getName() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> shopNameMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
-                        .collect(Collectors.toMap(Merchant::getId, Merchant::getShopName));
+                        .collect(Collectors.toMap(
+                                Merchant::getId,
+                                merchant -> merchant.getShopName() != null ? merchant.getShopName() : "",
+                                (v1, v2) -> v1
+                        ));
 
         // 11. 查询所有评价图片
         List<Long> reviewIds = resultPage.getRecords().stream()
@@ -317,24 +337,55 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             throw new BusinessException(4000, "评价不存在");
         }
 
-        // 2. 检查是否已有互动记录
-        LambdaQueryWrapper<Interaction> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Interaction::getUserId, userId);
-        wrapper.eq(Interaction::getReviewId, reviewId);
-        Interaction existInteraction = interactionMapper.selectOne(wrapper);
+        // 2. 检查是否已有互动记录（包括已删除的）
+        Interaction existInteraction = interactionMapper.selectOne(
+                new LambdaQueryWrapper<Interaction>()
+                        .eq(Interaction::getUserId, userId)
+                        .eq(Interaction::getReviewId, reviewId)
+                        .last("LIMIT 1")
+        );
 
-        if (existInteraction != null) {
-            // 3. 创建点赞记录
-            Interaction interaction = new Interaction();
-            interaction.setUserId(userId);
-            interaction.setReviewId(reviewId);
-            interaction.setType("LIKE");
-            interactionMapper.insert(interaction);
+        if (existInteraction == null) {
+            // 3. 没有记录，直接创建点赞记录
+            try {
+                Interaction interaction = new Interaction();
+                interaction.setUserId(userId);
+                interaction.setReviewId(reviewId);
+                interaction.setType("LIKE");
+                interactionMapper.insert(interaction);
 
-            // 4. 更新评价点赞数
-            review.setLikeCount(review.getLikeCount() + 1);
-            reviewMapper.updateById(review);
-        } else if (existInteraction != null && "DISLIKE".equals(existInteraction.getType())) {
+                // 4. 更新评价点赞数
+                review.setLikeCount(review.getLikeCount() + 1);
+                reviewMapper.updateById(review);
+            } catch (Exception e) {
+                // 如果是唯一索引冲突，说明存在已逻辑删除的记录
+                if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+                    // 查找旧记录（包括已删除的）
+                    Interaction oldInteraction = interactionMapper.selectOne(
+                            new LambdaQueryWrapper<Interaction>()
+                                    .eq(Interaction::getUserId, userId)
+                                    .eq(Interaction::getReviewId, reviewId)
+                                    .last("LIMIT 1")
+                    );
+                    if (oldInteraction != null) {
+                        // 物理删除旧记录
+                        interactionMapper.physicalDeleteById(oldInteraction.getId());
+                    }
+                    // 重新插入
+                    Interaction interaction = new Interaction();
+                    interaction.setUserId(userId);
+                    interaction.setReviewId(reviewId);
+                    interaction.setType("LIKE");
+                    interactionMapper.insert(interaction);
+
+                    // 更新评价点赞数
+                    review.setLikeCount(review.getLikeCount() + 1);
+                    reviewMapper.updateById(review);
+                } else {
+                    throw e;
+                }
+            }
+        } else if ("DISLIKE".equals(existInteraction.getType())) {
             // 5. 如果之前是踩，改为点赞
             existInteraction.setType("LIKE");
             interactionMapper.updateById(existInteraction);
@@ -344,6 +395,7 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             review.setDislikeCount(Math.max(0, review.getDislikeCount() - 1));
             reviewMapper.updateById(review);
         }
+        // 如果已有点赞记录，不做任何事
     }
 
     @Override
@@ -355,33 +407,41 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             throw new BusinessException(4000, "评价不存在");
         }
 
-        // 2. 检查是否已有互动记录
-        LambdaQueryWrapper<Interaction> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Interaction::getUserId, userId);
-        wrapper.eq(Interaction::getReviewId, reviewId);
-        Interaction existInteraction = interactionMapper.selectOne(wrapper);
+        // 2. 查找现有记录（包括已删除的）
+        Interaction existInteraction = interactionMapper.selectOne(
+                new LambdaQueryWrapper<Interaction>()
+                        .eq(Interaction::getUserId, userId)
+                        .eq(Interaction::getReviewId, reviewId)
+                        .last("LIMIT 1")
+        );
 
+        // 3. 如果有记录，先物理删除它
         if (existInteraction != null) {
-            // 3. 创建踩记录
-            Interaction interaction = new Interaction();
-            interaction.setUserId(userId);
-            interaction.setReviewId(reviewId);
-            interaction.setType("DISLIKE");
-            interactionMapper.insert(interaction);
+            if ("DISLIKE".equals(existInteraction.getType())) {
+                // 已有踩，不做任何事
+                return;
+            }
+            // 物理删除旧记录
+            interactionMapper.physicalDeleteById(existInteraction.getId());
+        }
 
-            // 4. 更新评价踩数
-            review.setDislikeCount(review.getDislikeCount() + 1);
-            reviewMapper.updateById(review);
-        } else if ("LIKE".equals(existInteraction.getType())) {
-            // 5. 如果之前是点赞，改为踩
-            existInteraction.setType("DISLIKE");
-            interactionMapper.updateById(existInteraction);
+        // 4. 创建新的踩记录
+        Interaction interaction = new Interaction();
+        interaction.setUserId(userId);
+        interaction.setReviewId(reviewId);
+        interaction.setType("DISLIKE");
+        interactionMapper.insert(interaction);
 
-            // 6. 更新评价计数
+        // 5. 更新评价计数
+        if (existInteraction != null && "LIKE".equals(existInteraction.getType())) {
+            // 之前是点赞，改为踩（点赞数-1，踩数+1）
             review.setDislikeCount(review.getDislikeCount() + 1);
             review.setLikeCount(Math.max(0, review.getLikeCount() - 1));
-            reviewMapper.updateById(review);
+        } else {
+            // 新增踩
+            review.setDislikeCount(review.getDislikeCount() + 1);
         }
+        reviewMapper.updateById(review);
     }
 
     @Override
@@ -393,18 +453,20 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             throw new BusinessException(4000, "评价不存在");
         }
 
-        // 2. 查询互动记录
-        LambdaQueryWrapper<Interaction> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Interaction::getUserId, userId);
-        wrapper.eq(Interaction::getReviewId, reviewId);
-        Interaction interaction = interactionMapper.selectOne(wrapper);
+        // 2. 查询互动记录（包括已删除的）
+        Interaction interaction = interactionMapper.selectOne(
+                new LambdaQueryWrapper<Interaction>()
+                        .eq(Interaction::getUserId, userId)
+                        .eq(Interaction::getReviewId, reviewId)
+                        .last("LIMIT 1")
+        );
 
-        if (interaction != null) {
+        if (interaction == null) {
             throw new BusinessException(4000, "还没有对该评价进行互动");
         }
 
-        // 3. 删除互动记录
-        interactionMapper.deleteById(interaction.getId());
+        // 3. 使用物理删除，避免唯一索引冲突
+        interactionMapper.physicalDeleteById(interaction.getId());
 
         // 4. 更新评价计数
         if ("LIKE".equals(interaction.getType())) {

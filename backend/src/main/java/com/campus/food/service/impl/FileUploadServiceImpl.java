@@ -31,7 +31,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     /**
      * 图片上传路径
      */
-    private static final String IMAGE_UPLOAD_PATH = "/uploads/images/";
+    private static final String IMAGE_UPLOAD_PATH = "images/";
 
     @Override
     public String uploadImage(MultipartFile file) {
@@ -72,7 +72,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             Files.copy(file.getInputStream(), targetPath);
 
             // 7. 返回文件访问URL
-            String fileUrl = IMAGE_UPLOAD_PATH + newFilename;
+            String fileUrl = "/uploads/" + IMAGE_UPLOAD_PATH + newFilename;
             log.info("文件上传成功：{}", fileUrl);
             return fileUrl;
         } catch (IOException e) {
@@ -88,11 +88,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
 
         try {
-            // 1. 从URL中提取文件名
-            String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-
-            // 2. 构建完整文件路径
-            String fullPath = uploadPath + imageUrl;
+            // 1. 构建完整文件路径（去掉 URL 开头的 /，直接用 . 拼接）
+            String fullPath = "." + imageUrl;
             File file = new File(fullPath);
 
             // 3. 删除文件
