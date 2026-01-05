@@ -39,7 +39,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "删除评价")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Void> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser

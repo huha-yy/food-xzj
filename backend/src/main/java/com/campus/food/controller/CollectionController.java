@@ -26,7 +26,7 @@ public class CollectionController {
 
     @PostMapping
     @Operation(summary = "添加收藏")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Long> addCollection(
             @RequestBody CreateCollectionDTO createCollectionDTO,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -37,7 +37,7 @@ public class CollectionController {
 
     @DeleteMapping("/{collectionId}")
     @Operation(summary = "取消收藏")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Void> cancelCollection(
             @PathVariable Long collectionId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -48,7 +48,7 @@ public class CollectionController {
 
     @GetMapping("/list")
     @Operation(summary = "收藏列表查询")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<IPage<CollectionVO>> getCollectionList(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer pageSize,
@@ -62,7 +62,7 @@ public class CollectionController {
 
     @GetMapping("/check")
     @Operation(summary = "检查收藏状态")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Boolean> checkCollectionStatus(
             @RequestParam String type,
             @RequestParam Long targetId,

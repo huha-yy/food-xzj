@@ -132,19 +132,31 @@ public class CollectionServiceImpl extends ServiceImpl<CollectionMapper, Collect
         Map<Long, String> avatarMap = userIds.isEmpty() ? Map.of() :
                 userProfileMapper.selectList(new LambdaQueryWrapper<UserProfile>()
                                 .in(UserProfile::getUserId, userIds)).stream()
-                        .collect(Collectors.toMap(UserProfile::getUserId, UserProfile::getAvatar));
+                        .collect(Collectors.toMap(
+                                UserProfile::getUserId,
+                                profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> shopNameMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
                         .collect(Collectors.toMap(Merchant::getId, Merchant::getShopName));
         Map<Long, String> imageMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
-                        .collect(Collectors.toMap(Merchant::getId, Merchant::getCoverImage));
+                        .collect(Collectors.toMap(
+                                Merchant::getId,
+                                merchant -> merchant.getCoverImage() != null ? merchant.getCoverImage() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> foodNameMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
                         .collect(Collectors.toMap(Food::getId, Food::getName));
         Map<Long, String> foodImageMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
-                        .collect(Collectors.toMap(Food::getId, Food::getImageUrl));
+                        .collect(Collectors.toMap(
+                                Food::getId,
+                                food -> food.getImageUrl() != null ? food.getImageUrl() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, BigDecimal> priceMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
                         .collect(Collectors.toMap(Food::getId, Food::getPrice));

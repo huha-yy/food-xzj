@@ -212,17 +212,33 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         // 10. 批量查询
         Map<Long, String> usernameMap = userIds.isEmpty() ? Map.of() :
                 userMapper.selectBatchIds(userIds).stream()
-                        .collect(Collectors.toMap(User::getId, User::getUsername));
+                        .collect(Collectors.toMap(
+                                User::getId,
+                                user -> user.getUsername() != null ? user.getUsername() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> avatarMap = userIds.isEmpty() ? Map.of() :
                 userProfileMapper.selectList(new LambdaQueryWrapper<UserProfile>()
                                 .in(UserProfile::getUserId, userIds)).stream()
-                        .collect(Collectors.toMap(UserProfile::getUserId, UserProfile::getAvatar));
+                        .collect(Collectors.toMap(
+                                UserProfile::getUserId,
+                                profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> foodNameMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
-                        .collect(Collectors.toMap(Food::getId, Food::getName));
+                        .collect(Collectors.toMap(
+                                Food::getId,
+                                food -> food.getName() != null ? food.getName() : "",
+                                (v1, v2) -> v1
+                        ));
         Map<Long, String> shopNameMap = merchantIds.isEmpty() ? Map.of() :
                 merchantMapper.selectBatchIds(merchantIds).stream()
-                        .collect(Collectors.toMap(Merchant::getId, Merchant::getShopName));
+                        .collect(Collectors.toMap(
+                                Merchant::getId,
+                                merchant -> merchant.getShopName() != null ? merchant.getShopName() : "",
+                                (v1, v2) -> v1
+                        ));
 
         // 11. 查询所有评价图片
         List<Long> reviewIds = resultPage.getRecords().stream()
