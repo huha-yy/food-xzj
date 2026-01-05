@@ -65,6 +65,11 @@ public class FoodVO {
     private String status;
 
     /**
+     * 店铺名称
+     */
+    private String shopName;
+
+    /**
      * 创建时间
      */
     private String createTime;

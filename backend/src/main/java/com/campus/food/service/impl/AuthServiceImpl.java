@@ -69,10 +69,21 @@ public class AuthServiceImpl implements AuthService {
         userMapper.insert(user);
 
         // 5. 如果是学生，创建用户资料
-        if ("STUDENT".equals(registerDTO.getRole()) && registerDTO.getStudentNo() != null) {
+        if ("STUDENT".equals(registerDTO.getRole())) {
             UserProfile profile = new UserProfile();
             profile.setUserId(user.getId());
-            profile.setStudentNo(registerDTO.getStudentNo());
+            profile.setNickname(registerDTO.getUsername());
+            profile.setPhone(registerDTO.getPhone());
+            if (registerDTO.getStudentNo() != null) {
+                profile.setStudentNo(registerDTO.getStudentNo());
+            }
+            userProfileMapper.insert(profile);
+        } else if ("MERCHANT".equals(registerDTO.getRole())) {
+            // 商家也可以创建资料
+            UserProfile profile = new UserProfile();
+            profile.setUserId(user.getId());
+            profile.setNickname(registerDTO.getUsername());
+            profile.setPhone(registerDTO.getPhone());
             userProfileMapper.insert(profile);
         }
     }

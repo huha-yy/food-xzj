@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 /**
  * 文件上传服务实现
@@ -31,7 +28,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     /**
      * 图片上传路径
      */
-    private static final String IMAGE_UPLOAD_PATH = "/uploads/images/";
+    private static final String IMAGE_UPLOAD_PATH = "images/";
 
     @Override
     public String uploadImage(MultipartFile file) {
@@ -72,7 +69,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             Files.copy(file.getInputStream(), targetPath);
 
             // 7. 返回文件访问URL
-            String fileUrl = IMAGE_UPLOAD_PATH + newFilename;
+            String fileUrl = "/uploads/" + IMAGE_UPLOAD_PATH + newFilename;
             log.info("文件上传成功：{}", fileUrl);
             return fileUrl;
         } catch (IOException e) {
@@ -88,11 +85,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
 
         try {
-            // 1. 从URL中提取文件名
-            String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-
-            // 2. 构建完整文件路径
-            String fullPath = uploadPath + imageUrl;
+            // 1. 构建完整文件路径（去掉 URL 开头的 /，直接用 . 拼接）
+            String fullPath = "." + imageUrl;
             File file = new File(fullPath);
 
             // 3. 删除文件
@@ -133,20 +127,20 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     /**
-     * 生成唯一文件名
+     * 生成文件名（使用原始文件名，避免冲突则添加时间戳）
      */
     private String generateFilename(String originalFilename) {
         // 1. 获取文件扩展名
         String extension = getFileExtension(originalFilename);
 
-        // 2. 生成UUID作为文件名
-        String uuid = UUID.randomUUID().toString().replace("-", "");
+        // 2. 获取不带扩展名的原始文件名
+        String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
 
-        // 3. 获取日期作为前缀
-        String datePrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        // 3. 获取时间戳作为后缀
+        long timestamp = System.currentTimeMillis();
 
-        // 4. 组合文件名
-        return datePrefix + "_" + uuid + "." + extension;
+        // 4. 组合文件名：原始名_时间戳.扩展名
+        return baseName + "_" + timestamp + "." + extension;
     }
 }
 

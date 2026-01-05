@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.campus.food.dto.CreateReviewDTO;
 import com.campus.food.dto.ReviewAuditDTO;
 import com.campus.food.dto.ReviewQueryDTO;
+import com.campus.food.vo.ReviewStatisticsVO;
 import com.campus.food.vo.ReviewVO;
 
 /**
@@ -50,5 +51,10 @@ public interface ReviewService {
      * 取消点赞/踩
      */
     void cancelInteraction(Long reviewId, Long userId);
+
+    /**
+     * 获取评价统计数据
+     */
+    ReviewStatisticsVO getReviewStatistics();
 }
 

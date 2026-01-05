@@ -9,9 +9,11 @@ import com.campus.food.dto.FoodQueryDTO;
 import com.campus.food.dto.UpdateFoodDTO;
 import com.campus.food.entity.Category;
 import com.campus.food.entity.Food;
+import com.campus.food.entity.Merchant;
 import com.campus.food.exception.BusinessException;
 import com.campus.food.mapper.CategoryMapper;
 import com.campus.food.mapper.FoodMapper;
+import com.campus.food.mapper.MerchantMapper;
 import com.campus.food.service.FoodService;
 import com.campus.food.vo.FoodVO;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements Fo
 
     private final FoodMapper foodMapper;
     private final CategoryMapper categoryMapper;
+    private final MerchantMapper merchantMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -126,12 +129,17 @@ public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements Fo
         Category category = categoryMapper.selectById(food.getCategoryId());
         String categoryName = category != null ? category.getName() : "";
 
-        // 3. 构建返回对象
+        // 3. 查询商家信息
+        Merchant merchant = merchantMapper.selectById(food.getMerchantId());
+        String shopName = merchant != null ? merchant.getShopName() : "";
+
+        // 4. 构建返回对象
         FoodVO foodVO = new FoodVO();
         foodVO.setFoodId(food.getId());
         foodVO.setMerchantId(food.getMerchantId());
         foodVO.setCategoryId(food.getCategoryId());
         foodVO.setCategoryName(categoryName);
+        foodVO.setShopName(shopName);
         foodVO.setName(food.getName());
         foodVO.setPrice(food.getPrice());
         foodVO.setDescription(food.getDescription());

@@ -7,6 +7,7 @@ import com.campus.food.dto.ReviewAuditDTO;
 import com.campus.food.dto.ReviewQueryDTO;
 import com.campus.food.security.SecurityUser;
 import com.campus.food.service.ReviewService;
+import com.campus.food.vo.ReviewStatisticsVO;
 import com.campus.food.vo.ReviewVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,7 +40,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "删除评价")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public Result<Void> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -80,7 +81,7 @@ public class ReviewController {
 
     @PostMapping("/{reviewId}/like")
     @Operation(summary = "点赞")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> likeReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -91,7 +92,7 @@ public class ReviewController {
 
     @PostMapping("/{reviewId}/dislike")
     @Operation(summary = "踩")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> dislikeReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
@@ -102,13 +103,20 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}/interaction")
     @Operation(summary = "取消点赞/踩")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("isAuthenticated()")
     public Result<Void> cancelInteraction(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
         reviewService.cancelInteraction(reviewId, securityUser.getUserId());
         return Result.success();
+    }
+
+    @GetMapping("/statistics")
+    @Operation(summary = "获取评价统计数据")
+    public Result<ReviewStatisticsVO> getReviewStatistics() {
+        ReviewStatisticsVO statistics = reviewService.getReviewStatistics();
+        return Result.success(statistics);
     }
 }
 

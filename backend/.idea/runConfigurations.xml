@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="ProjectRunConfigurationManager">
+  <configuration default="Spring Boot - CampusFoodApplication">
+    <configuration name="Spring Boot - CampusFoodApplication" type="SpringBootApplicationConfigurationType">
+      <option name="ALTERNATIVE_JRE_ENABLED" value="false" />
+      <option name="MAIN_CLASS_NAME" value="com.campus.food.CampusFoodApplication" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <!-- 关键：设置工作目录为 backend 文件夹 -->
+      <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+      <option name="INCLUDE_PROVIDED_SCOPE" value="false" />
+      <option name="USE_PROJECT_CLASSPATH" value="false" />
+      <envs>
+        <env name="SPRING_APPLICATION_JSON" value="" />
+      </envs>
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="BuildProject" enabled="true" />
+      </method>
+      <module name="campus-food" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.campus.food.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+    </configuration>
+  </configuration>
+</component>
+

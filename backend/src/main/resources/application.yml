@@ -42,7 +42,7 @@ mybatis-plus:
 
 # JWT配置
 jwt:
-  secret: campus-food-secret-key-2024
+  secret: campus-food-secret-key-2024-hmac-sha256-algorithm-secure-jwt-key-256bits
   expiration: 2592000000  # 30天（毫秒）
 
 # Knife4j配置
