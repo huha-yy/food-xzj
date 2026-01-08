@@ -11,14 +11,14 @@
   text-align: center;
   margin-bottom: 32px;
   padding: 32px;
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-radius: 20px;
 }
 
 .page-header h1 {
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -33,11 +33,11 @@
 
 /* 统计卡片 */
 .stats-card {
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border: none;
   border-radius: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1);
+  box-shadow: 0 8px 32px rgba(64, 150, 255, 0.1);
   padding: 8px 0;
 }
 
@@ -109,12 +109,12 @@
 
 .filter-card .ant-input-affix-wrapper:hover,
 .filter-card .ant-input-affix-wrapper-focused {
-  border-color: #ff6b35;
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+  border-color: #4096ff;
+  box-shadow: 0 0 0 3px rgba(64, 150, 255, 0.1);
 }
 
 .filter-card .ant-input-prefix {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .filter-card .ant-select-selector {
@@ -125,24 +125,24 @@
 }
 
 .filter-card .ant-select-focused .ant-select-selector {
-  border-color: #ff6b35 !important;
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1) !important;
+  border-color: #4096ff !important;
+  box-shadow: 0 0 0 3px rgba(64, 150, 255, 0.1) !important;
 }
 
 .filter-card .ant-btn-primary {
   height: 44px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   font-weight: 600;
   padding: 0 24px;
-  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
 }
 
 .filter-card .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
+  box-shadow: 0 6px 16px rgba(22, 119, 255, 0.4);
 }
 
 /* 评价列表容器 */
@@ -163,8 +163,8 @@
 }
 
 .review-item-card:hover {
-  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.12);
-  border-color: #ffd6c9;
+  box-shadow: 0 8px 32px rgba(64, 150, 255, 0.12);
+  border-color: #91caff;
   transform: translateY(-4px);
 }
 
@@ -186,8 +186,8 @@
   width: 52px;
   height: 52px;
   border: 3px solid #fff;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  box-shadow: 0 4px 12px rgba(64, 150, 255, 0.2);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
 }
 
 .review-user-detail {
@@ -226,14 +226,14 @@
 }
 
 .review-rating-section .ant-rate-star-full .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .review-score-tag {
   font-size: 14px;
   font-weight: 600;
-  color: #ff6b35;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  color: #4096ff;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   padding: 4px 14px;
   border-radius: 14px;
 }
@@ -244,26 +244,26 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-radius: 20px;
   margin-bottom: 16px;
   cursor: pointer;
   transition: all 0.3s;
-  border: 1px solid #ffd6c9;
+  border: 1px solid #91caff;
 }
 
 .review-food-link:hover {
-  background: linear-gradient(135deg, #ffe8df 0%, #ffd6c9 100%);
+  background: linear-gradient(135deg, #bae0ff 0%, #91caff 100%);
   transform: translateX(4px);
 }
 
 .review-food-link .anticon {
-  color: #ff6b35;
+  color: #4096ff;
   font-size: 16px;
 }
 
 .review-food-name {
-  color: #e84118;
+  color: #1677ff;
   font-weight: 600;
   font-size: 14px;
 }
@@ -280,7 +280,7 @@
   padding: 16px 20px;
   background: #fafafa;
   border-radius: 12px;
-  border-left: 4px solid #ff6b35;
+  border-left: 4px solid #4096ff;
   margin: 0;
 }
 
@@ -342,9 +342,9 @@
 }
 
 .interaction-btn:hover:not(:disabled) {
-  color: #ff6b35 !important;
-  border-color: #ff6b35 !important;
-  background: #fff5f0 !important;
+  color: #4096ff !important;
+  border-color: #4096ff !important;
+  background: #e6f4ff !important;
 }
 
 .interaction-btn .anticon {
@@ -354,17 +354,17 @@
 }
 
 .interaction-btn:hover:not(:disabled) .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .interaction-btn.liked {
-  color: #ff6b35 !important;
-  border-color: #ff6b35 !important;
-  background: #fff5f0 !important;
+  color: #4096ff !important;
+  border-color: #4096ff !important;
+  background: #e6f4ff !important;
 }
 
 .interaction-btn.liked .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .interaction-btn.disliked {
@@ -379,8 +379,8 @@
 }
 
 .cancel-btn:hover {
-  color: #ff6b35 !important;
-  border-color: #ff6b35 !important;
+  color: #4096ff !important;
+  border-color: #4096ff !important;
 }
 
 /* 分页 */
@@ -415,8 +415,8 @@
 }
 
 .page-buttons .ant-btn:hover:not(:disabled) {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #4096ff;
+  color: #4096ff;
 }
 
 .page-buttons span {

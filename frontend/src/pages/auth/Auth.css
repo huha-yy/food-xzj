@@ -1,4 +1,4 @@
-/* 美食主题登录注册样式 - 左右布局 */
+/* 淡蓝色主题登录注册样式 - 左右布局 */
 
 /* 主容器 */
 .auth-container {
@@ -10,7 +10,7 @@
 /* ========== 左侧展示区域 ========== */
 .auth-left {
   flex: 1;
-  background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 50%, #e84118 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 50%, #1677ff 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -168,13 +168,13 @@
 }
 
 .auth-form .ant-input-affix-wrapper:hover {
-  border-color: #ff9a56;
+  border-color: #69b1ff;
 }
 
 .auth-form .ant-input-affix-wrapper:focus,
 .auth-form .ant-input-affix-wrapper-focused {
-  border-color: #ff6b35;
-  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+  border-color: #4096ff;
+  box-shadow: 0 0 0 4px rgba(64, 150, 255, 0.1);
 }
 
 .auth-form .ant-input {
@@ -183,7 +183,7 @@
 
 /* 输入框前缀图标颜色 */
 .auth-form .ant-input-prefix {
-  color: #ff6b35;
+  color: #4096ff;
   margin-right: 12px;
   font-size: 18px;
 }
@@ -203,30 +203,30 @@
 }
 
 .auth-form .ant-select:hover .ant-select-selector {
-  border-color: #ff9a56 !important;
+  border-color: #69b1ff !important;
 }
 
 .auth-form .ant-select-focused .ant-select-selector {
-  border-color: #ff6b35 !important;
-  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1) !important;
+  border-color: #4096ff !important;
+  box-shadow: 0 0 0 4px rgba(64, 150, 255, 0.1) !important;
 }
 
 /* 主按钮样式 */
 .auth-form .ant-btn-primary {
   height: 50px;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   border-radius: 10px;
   font-size: 17px;
   font-weight: 600;
   letter-spacing: 3px;
-  box-shadow: 0 6px 20px rgba(232, 65, 24, 0.35);
+  box-shadow: 0 6px 20px rgba(22, 119, 255, 0.35);
   transition: all 0.3s ease;
 }
 
 .auth-form .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
-  box-shadow: 0 8px 25px rgba(232, 65, 24, 0.45);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
+  box-shadow: 0 8px 25px rgba(22, 119, 255, 0.45);
   transform: translateY(-2px);
 }
 
@@ -245,14 +245,14 @@
 }
 
 .auth-footer .ant-btn-link {
-  color: #ff6b35;
+  color: #4096ff;
   font-weight: 600;
   padding: 0 4px;
   font-size: 15px;
 }
 
 .auth-footer .ant-btn-link:hover {
-  color: #e84118;
+  color: #1677ff;
 }
 
 /* 分割线 */

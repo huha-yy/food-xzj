@@ -19,16 +19,16 @@
   border-radius: 20px;
   padding: 0 20px;
   height: 38px;
-  border: 2px solid #ff6b35;
-  color: #ff6b35;
+  border: 2px solid #4096ff;
+  color: #4096ff;
   font-weight: 500;
   transition: all 0.3s;
 }
 
 .back-btn:hover {
-  background: #ff6b35 !important;
+  background: #4096ff !important;
   color: white !important;
-  border-color: #ff6b35 !important;
+  border-color: #4096ff !important;
   transform: translateX(-5px);
 }
 
@@ -36,7 +36,7 @@
 .food-main-card {
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(232, 65, 24, 0.1);
+  box-shadow: 0 8px 32px rgba(22, 119, 255, 0.1);
   border: none;
   margin-bottom: 24px;
 }
@@ -54,7 +54,7 @@
 /* 菜品图片区域 */
 .food-image-section {
   position: relative;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   min-height: 400px;
   display: flex;
   align-items: center;
@@ -78,7 +78,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #ff6b35;
+  color: #4096ff;
   text-align: center;
 }
 
@@ -90,7 +90,7 @@
 
 .food-image-placeholder span {
   font-size: 16px;
-  color: #e84118;
+  color: #1677ff;
 }
 
 /* 状态标签 */
@@ -112,9 +112,9 @@
 }
 
 .food-status-badge.off-shelf {
-  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+  background: linear-gradient(135deg, #8c8c8c 0%, #595959 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* 菜品信息区域 */
@@ -139,9 +139,9 @@
 }
 
 .food-category-tag {
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
-  border: 1px solid #ffd6c9;
-  color: #e84118;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  border: 1px solid #91caff;
+  color: #1677ff;
   font-size: 13px;
   padding: 4px 12px;
   border-radius: 15px;
@@ -158,11 +158,11 @@
 }
 
 .food-merchant:hover {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .food-merchant .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 /* 价格和评分 */
@@ -172,7 +172,7 @@
   gap: 24px;
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-radius: 16px;
 }
 
@@ -190,7 +190,7 @@
 .price-value {
   font-size: 32px;
   font-weight: 700;
-  color: #e84118;
+  color: #1677ff;
 }
 
 .price-value small {
@@ -220,13 +220,13 @@
 }
 
 .rating-content .ant-rate-star-full .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .rating-score {
   font-size: 20px;
   font-weight: 600;
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 /* 销量信息 */
@@ -247,13 +247,13 @@
 }
 
 .stat-item:hover {
-  background: #fff5f0;
+  background: #e6f4ff;
   transform: translateY(-2px);
 }
 
 .stat-item .anticon {
   font-size: 20px;
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .stat-item span {
@@ -305,25 +305,25 @@
 }
 
 .collection-btn.collected {
-  background: #fff5f0;
-  border-color: #ff6b35;
-  color: #ff6b35;
+  background: #e6f4ff;
+  border-color: #4096ff;
+  color: #4096ff;
 }
 
 .collection-btn.collected:hover {
-  background: #ffe8df;
+  background: #bae0ff;
 }
 
 .collection-btn:not(.collected) {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 16px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.3);
 }
 
 .collection-btn:not(.collected):hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(232, 65, 24, 0.4);
+  box-shadow: 0 6px 20px rgba(22, 119, 255, 0.4);
 }
 
 .review-btn {
@@ -332,14 +332,14 @@
   border-radius: 25px;
   font-size: 16px;
   font-weight: 600;
-  background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
   border: none;
-  box-shadow: 0 4px 16px rgba(255, 154, 86, 0.3);
+  box-shadow: 0 4px 16px rgba(105, 177, 255, 0.3);
 }
 
 .review-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 154, 86, 0.4);
+  box-shadow: 0 6px 20px rgba(105, 177, 255, 0.4);
 }
 
 /* 评价卡片 */
@@ -351,7 +351,7 @@
 }
 
 .review-card .ant-card-head {
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-bottom: none;
   padding: 20px 24px;
 }
@@ -369,15 +369,15 @@
 }
 
 .review-card-title .anticon {
-  color: #ff6b35;
+  color: #4096ff;
   font-size: 20px;
 }
 
 .review-count {
   font-size: 14px;
-  color: #ff6b35;
+  color: #4096ff;
   font-weight: 500;
-  background: #fff5f0;
+  background: #e6f4ff;
   padding: 6px 16px;
   border-radius: 20px;
 }
@@ -399,8 +399,8 @@
 }
 
 .review-item-card:hover {
-  background: #fff5f0;
-  border-color: #ffd6c9;
+  background: #e6f4ff;
+  border-color: #91caff;
   transform: translateX(4px);
 }
 
@@ -420,8 +420,8 @@
 
 .review-avatar {
   border: 3px solid #fff;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  box-shadow: 0 4px 12px rgba(64, 150, 255, 0.2);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
 }
 
 .review-user-detail {
@@ -454,14 +454,14 @@
 }
 
 .review-stars .ant-rate-star-full .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .review-score {
   font-size: 14px;
   font-weight: 600;
-  color: #ff6b35;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  color: #4096ff;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   padding: 4px 12px;
   border-radius: 12px;
 }
@@ -479,7 +479,7 @@
   padding: 16px;
   background: white;
   border-radius: 12px;
-  border-left: 4px solid #ff6b35;
+  border-left: 4px solid #4096ff;
 }
 
 /* 评价图片 */
@@ -535,9 +535,9 @@
 }
 
 .interaction-btn:hover:not(:disabled) {
-  color: #ff6b35 !important;
-  border-color: #ff6b35 !important;
-  background: #fff5f0 !important;
+  color: #4096ff !important;
+  border-color: #4096ff !important;
+  background: #e6f4ff !important;
 }
 
 .interaction-btn .anticon {
@@ -546,17 +546,17 @@
 }
 
 .interaction-btn:hover:not(:disabled) .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .interaction-btn.active {
-  color: #ff6b35 !important;
-  border-color: #ff6b35 !important;
-  background: #fff5f0 !important;
+  color: #4096ff !important;
+  border-color: #4096ff !important;
+  background: #e6f4ff !important;
 }
 
 .interaction-btn.active .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .cancel-btn {
@@ -568,7 +568,7 @@
 }
 
 .cancel-btn:hover {
-  color: #ff6b35 !important;
+  color: #4096ff !important;
 }
 
 /* 空状态 */

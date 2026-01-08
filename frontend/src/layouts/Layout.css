@@ -1,4 +1,4 @@
-/* ========== 全局布局样式 - 美食主题 ========== */
+/* ========== 全局布局样式 - 淡蓝色主题 ========== */
 
 /* Logo区域 */
 .logo {
@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   position: relative;
   overflow: hidden;
   padding: 12px;
@@ -46,19 +46,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   font-size: 32px;
 }
 
 /* 侧边栏 */
 .ant-layout-sider {
-  box-shadow: 4px 0 20px rgba(232, 65, 24, 0.15) !important;
+  box-shadow: 4px 0 20px rgba(22, 119, 255, 0.15) !important;
   z-index: 1000;
-  background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%) !important;
+  background: linear-gradient(180deg, #e6f4ff 0%, #ffffff 100%) !important;
 }
 
 .ant-layout-sider-light {
-  background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%) !important;
+  background: linear-gradient(180deg, #e6f4ff 0%, #ffffff 100%) !important;
 }
 
 /* 侧边栏菜单 */
@@ -82,15 +82,15 @@
 }
 
 .ant-menu-light .ant-menu-item:hover {
-  color: #ff6b35;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%) !important;
+  color: #4096ff;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%) !important;
 }
 
 .ant-menu-light .ant-menu-item-selected {
   color: white !important;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
 }
 
 .ant-menu-light .ant-menu-item-selected .anticon {
@@ -99,7 +99,7 @@
 
 .ant-menu-light .ant-menu-item .anticon {
   font-size: 18px;
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .ant-menu-light .ant-menu-item-selected .anticon {
@@ -112,26 +112,26 @@
 }
 
 .ant-layout-sider::-webkit-scrollbar-track {
-  background: #fff5f0;
+  background: #e6f4ff;
 }
 
 .ant-layout-sider::-webkit-scrollbar-thumb {
-  background: #ffd6c9;
+  background: #91caff;
   border-radius: 3px;
 }
 
 .ant-layout-sider::-webkit-scrollbar-thumb:hover {
-  background: #ff6b35;
+  background: #4096ff;
 }
 
 /* 折叠按钮 */
 .ant-layout-sider-trigger {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ant-layout-sider-trigger:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%) !important;
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%) !important;
 }
 
 /* 顶部Header */
@@ -143,7 +143,7 @@
   top: 0;
   z-index: 100;
   border-bottom: 3px solid transparent;
-  border-image: linear-gradient(90deg, #ff6b35 0%, #e84118 100%);
+  border-image: linear-gradient(90deg, #4096ff 0%, #1677ff 100%);
   border-image-slice: 1;
 }
 
@@ -159,7 +159,7 @@
 .header-title {
   font-size: 22px;
   font-weight: 700;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -193,13 +193,13 @@
 }
 
 .user-info:hover {
-  background: #fff5f0;
-  border-color: #ff6b35;
-  box-shadow: 0 2px 8px rgba(232, 65, 24, 0.1);
+  background: #e6f4ff;
+  border-color: #4096ff;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
 }
 
 .user-info .ant-avatar {
-  border: 2px solid #ff6b35;
+  border: 2px solid #4096ff;
   flex-shrink: 0;
 }
 
@@ -218,7 +218,7 @@
 
 .user-role {
   font-size: 11px;
-  color: #ff6b35;
+  color: #4096ff;
   line-height: 1.2;
   font-weight: 500;
 }
@@ -250,12 +250,12 @@
 }
 
 .ant-dropdown-menu-item:hover {
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
-  color: #ff6b35;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  color: #4096ff;
 }
 
 .ant-dropdown-menu-item .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 /* 移动端响应式 */

@@ -1,4 +1,4 @@
-/* ========== 个人中心样式 - 美食主题 ========== */
+/* ========== 个人中心样式 - 淡蓝色主题 ========== */
 
 .personal-center {
   max-width: 1000px;
@@ -7,13 +7,13 @@
 
 /* 用户资料头部区域 */
 .user-profile-header {
-  background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 50%, #e84118 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 50%, #1677ff 100%);
   border-radius: 20px;
   padding: 48px 40px;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(232, 65, 24, 0.25);
+  box-shadow: 0 10px 40px rgba(22, 119, 255, 0.25);
 }
 
 .user-profile-header::before {
@@ -117,7 +117,7 @@
 
 .user-tags .ant-tag.active-tag {
   background: rgba(255, 255, 255, 0.95);
-  color: #e84118;
+  color: #1677ff;
   border: none;
   font-weight: 600;
 }
@@ -141,7 +141,7 @@
 
 .profile-actions .ant-btn:hover {
   background: white;
-  color: #e84118;
+  color: #1677ff;
   border-color: white;
   transform: translateY(-2px);
 }
@@ -167,8 +167,8 @@
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(232, 65, 24, 0.12);
-  border-color: #ff6b35;
+  box-shadow: 0 12px 32px rgba(22, 119, 255, 0.12);
+  border-color: #4096ff;
 }
 
 .stat-icon {
@@ -183,13 +183,13 @@
 }
 
 .stat-icon.collections {
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
-  color: #ff6b35;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  color: #4096ff;
 }
 
 .stat-icon.reviews {
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
-  color: #fa8c16;
+  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+  color: #1890ff;
 }
 
 .stat-icon.likes {
@@ -202,7 +202,7 @@
   font-weight: 700;
   color: #333;
   margin-bottom: 4px;
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -242,16 +242,16 @@
 }
 
 .content-card .ant-tabs-tab:hover {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .content-card .ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #ff6b35 !important;
+  color: #4096ff !important;
   font-weight: 600;
 }
 
 .content-card .ant-tabs-ink-bar {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
   height: 3px !important;
   border-radius: 3px;
 }
@@ -262,7 +262,7 @@
 
 /* Descriptions样式 */
 .content-card .ant-descriptions-bordered .ant-descriptions-item-label {
-  background: #fff8f5;
+  background: #e6f4ff;
   color: #666;
   font-weight: 500;
 }
@@ -281,18 +281,18 @@
 }
 
 .action-buttons .ant-btn-primary {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   border-radius: 10px;
   height: 44px;
   min-width: 160px;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
 }
 
 .action-buttons .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
-  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
+  box-shadow: 0 6px 16px rgba(22, 119, 255, 0.4);
   transform: translateY(-2px);
 }
 
@@ -300,15 +300,15 @@
   border-radius: 10px;
   height: 44px;
   min-width: 140px;
-  border: 2px solid #ff6b35;
-  color: #ff6b35;
+  border: 2px solid #4096ff;
+  color: #4096ff;
   font-weight: 500;
 }
 
 .action-buttons .ant-btn-default:hover {
-  background: #fff5f0;
-  border-color: #e84118;
-  color: #e84118;
+  background: #e6f4ff;
+  border-color: #1677ff;
+  color: #1677ff;
 }
 
 /* 空状态 */
@@ -324,7 +324,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,7 +333,7 @@
 
 .empty-section .empty-icon .anticon {
   font-size: 36px;
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .empty-section p {
@@ -343,17 +343,17 @@
 }
 
 .empty-section .ant-btn {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   border-radius: 25px;
   height: 44px;
   min-width: 160px;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
 }
 
 .empty-section .ant-btn:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
 }
 
 /* 头像上传区域 */
@@ -362,30 +362,30 @@
   align-items: center;
   gap: 24px;
   padding: 24px;
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-radius: 12px;
-  border: 2px dashed #ffd6c9;
+  border: 2px dashed #91caff;
   transition: all 0.3s;
 }
 
 .avatar-upload-section:hover {
-  border-color: #ff6b35;
+  border-color: #4096ff;
 }
 
 .avatar-upload-section .ant-avatar {
   flex-shrink: 0;
-  border: 3px solid #ff6b35;
+  border: 3px solid #4096ff;
 }
 
 .avatar-upload-section .ant-btn {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   border-radius: 8px;
   color: white;
 }
 
 .avatar-upload-section .ant-btn:hover {
-  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  background: linear-gradient(135deg, #69b1ff 0%, #4096ff 100%);
 }
 
 /* Modal样式 */

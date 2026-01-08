@@ -19,16 +19,16 @@
   border-radius: 20px;
   padding: 0 20px;
   height: 38px;
-  border: 2px solid #ff6b35;
-  color: #ff6b35;
+  border: 2px solid #4096ff;
+  color: #4096ff;
   font-weight: 500;
   transition: all 0.3s;
 }
 
 .merchant-detail .back-btn:hover {
-  background: #ff6b35 !important;
+  background: #4096ff !important;
   color: white !important;
-  border-color: #ff6b35 !important;
+  border-color: #4096ff !important;
   transform: translateX(-5px);
 }
 
@@ -36,7 +36,7 @@
 .merchant-main-card {
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(232, 65, 24, 0.1);
+  box-shadow: 0 8px 32px rgba(22, 119, 255, 0.1);
   border: none;
   margin-bottom: 24px;
 }
@@ -57,12 +57,12 @@
   width: 120px;
   height: 120px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(232, 65, 24, 0.15);
+  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.15);
 }
 
 .merchant-logo {
@@ -105,12 +105,12 @@
 }
 
 .status-tag.pending {
-  background: linear-gradient(135deg, #faad14 0%, #d48806 100%);
+  background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
   color: white;
 }
 
 .status-tag.rejected {
-  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+  background: linear-gradient(135deg, #8c8c8c 0%, #595959 100%);
   color: white;
 }
 
@@ -130,7 +130,7 @@
   align-items: center;
   gap: 12px;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-radius: 16px;
   margin-bottom: 24px;
 }
@@ -140,13 +140,13 @@
 }
 
 .merchant-rating-section .ant-rate-star-full .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .rating-text {
   font-size: 18px;
   font-weight: 600;
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 /* 商家信息项 */
@@ -168,7 +168,7 @@
 }
 
 .info-item:hover {
-  background: #fff5f0;
+  background: #e6f4ff;
 }
 
 .info-label {
@@ -181,7 +181,7 @@
 }
 
 .info-label .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .info-value {
@@ -201,7 +201,7 @@
 
 .merchant-address .anticon,
 .business-hours .anticon {
-  color: #ff6b35;
+  color: #4096ff;
   font-size: 16px;
 }
 
@@ -238,25 +238,25 @@
 }
 
 .merchant-collection-btn.collected {
-  background: #fff5f0;
-  border-color: #ff6b35;
-  color: #ff6b35;
+  background: #e6f4ff;
+  border-color: #4096ff;
+  color: #4096ff;
 }
 
 .merchant-collection-btn.collected:hover {
-  background: #ffe8df;
+  background: #bae0ff;
 }
 
 .merchant-collection-btn:not(.collected) {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 16px rgba(232, 65, 24, 0.3);
+  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.3);
 }
 
 .merchant-collection-btn:not(.collected):hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(232, 65, 24, 0.4);
+  box-shadow: 0 6px 20px rgba(22, 119, 255, 0.4);
 }
 
 /* 内容卡片 */
@@ -268,7 +268,7 @@
 }
 
 .merchant-content-card .ant-card-head {
-  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   border-bottom: none;
   padding: 20px 24px;
 }
@@ -285,16 +285,16 @@
 }
 
 .merchant-content-card .ant-tabs-tab:hover {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .merchant-content-card .ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #ff6b35 !important;
+  color: #4096ff !important;
   font-weight: 600;
 }
 
 .merchant-content-card .ant-tabs-ink-bar {
-  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%) !important;
   height: 3px !important;
 }
 
@@ -311,7 +311,7 @@
 
 .merchant-food-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 16px 32px rgba(232, 65, 24, 0.15);
+  box-shadow: 0 16px 32px rgba(22, 119, 255, 0.15);
 }
 
 .merchant-food-card .food-image {
@@ -328,11 +328,11 @@
 .merchant-food-card .food-image-placeholder {
   width: 100%;
   height: 180px;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff6b35;
+  color: #4096ff;
   font-size: 48px;
 }
 
@@ -354,11 +354,11 @@
 .category-name {
   display: inline-block;
   font-size: 12px;
-  color: #ff6b35;
-  background: #fff5f0;
+  color: #4096ff;
+  background: #e6f4ff;
   padding: 4px 12px;
   border-radius: 12px;
-  border: 1px solid #ffd6c9;
+  border: 1px solid #91caff;
 }
 
 .food-rating {
@@ -373,12 +373,12 @@
 }
 
 .food-rating .ant-rate-star-full .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 .rating-count {
   font-size: 14px;
-  color: #ff6b35;
+  color: #4096ff;
   font-weight: 600;
 }
 
@@ -387,12 +387,12 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #e84118;
+  color: #1677ff;
   font-weight: 500;
 }
 
 .food-sales .anticon {
-  color: #ff6b35;
+  color: #4096ff;
 }
 
 /* 空状态 */

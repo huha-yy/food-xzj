@@ -89,7 +89,7 @@ const ReviewDetail = () => {
       stars.push(
         <StarOutlined
           key={i}
-          style={{ color: i <= rating ? '#faad14' : '#d9d9d9', marginRight: 4 }}
+          style={{ color: i <= rating ? '#1677ff' : '#d9d9d9', marginRight: 4 }}
         />
       )
     }
@@ -208,7 +208,7 @@ const ReviewDetail = () => {
                 <Button
                   icon={<DislikeOutlined />}
                   onClick={handleDislike}
-                  style={{ color: '#ff4d4f' }}
+                  style={{ color: '#8c8c8c' }}
                 >
                   踩 {review.dislikeCount}
                 </Button>

@@ -110,7 +110,7 @@ function ReviewList() {
                 title="总评价数"
                 value={statistics.totalCount}
                 prefix={<CommentOutlined />}
-                valueStyle={{ color: '#ff6b35' }}
+                valueStyle={{ color: '#1677ff' }}
               />
             </Col>
             <Col xs={24} sm={8}>
@@ -120,7 +120,7 @@ function ReviewList() {
                 precision={1}
                 suffix="分"
                 prefix={<StarOutlined />}
-                valueStyle={{ color: '#e84118' }}
+                valueStyle={{ color: '#1677ff' }}
               />
             </Col>
             <Col xs={24} sm={8}>
@@ -128,7 +128,7 @@ function ReviewList() {
                 title="今日新增"
                 value={statistics.todayCount}
                 prefix={<FireOutlined />}
-                valueStyle={{ color: '#ff6b35' }}
+                valueStyle={{ color: '#1677ff' }}
               />
             </Col>
           </Row>

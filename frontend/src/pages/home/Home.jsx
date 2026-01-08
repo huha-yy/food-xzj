@@ -122,7 +122,7 @@ function Home() {
           title={
             <div className="food-title">
               <span>{food.name}</span>
-              <Tag color="#ff6b6b">¥{food.price}</Tag>
+              <Tag color="#4096ff">¥{food.price}</Tag>
             </div>
           }
           description={

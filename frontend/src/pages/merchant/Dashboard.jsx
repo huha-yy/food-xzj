@@ -377,7 +377,7 @@ function Dashboard() {
                         title="已下架"
                         value={statsData.offShelf}
                         prefix={<ArrowDownOutlined />}
-                        valueStyle={{ color: '#ff4d4f' }}
+                        valueStyle={{ color: '#8c8c8c' }}
                       />
                     </Card>
                   </Col>

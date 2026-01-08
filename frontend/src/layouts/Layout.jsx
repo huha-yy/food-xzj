@@ -156,7 +156,7 @@ function Layout() {
                   src={userInfo.avatar}
                   icon={<UserOutlined />}
                   size={36}
-                  style={{ backgroundColor: '#ff6b35' }}
+                  style={{ backgroundColor: '#4096ff' }}
                 />
                 <div className="user-info-content">
                   <span className="username">{userInfo.nickname || userInfo.username}</span>

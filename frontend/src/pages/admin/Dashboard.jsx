@@ -872,7 +872,7 @@ function Dashboard() {
                       title="菜品总数"
                       value={stats.foodCount}
                       prefix={<ShoppingOutlined />}
-                      valueStyle={{ color: '#faad14' }}
+                      valueStyle={{ color: '#1677ff' }}
                     />
                   </Card>
                 </Col>
