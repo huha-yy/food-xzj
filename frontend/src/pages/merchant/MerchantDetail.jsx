@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Descriptions, Rate, Button, Tag, List, Avatar, Empty, Spin, Tabs, message } from 'antd'
-import { ShopOutlined, EnvironmentOutlined, ArrowLeftOutlined, StarOutlined, HeartOutlined } from '@ant-design/icons'
+import { Card, Rate, Button, Tag, List, Empty, Spin, Tabs, message } from 'antd'
+import {
+  ShopOutlined,
+  EnvironmentOutlined,
+  ArrowLeftOutlined,
+  StarOutlined,
+  HeartOutlined,
+  HeartFilled,
+  ClockCircleOutlined,
+  FireOutlined,
+  CoffeeOutlined
+} from '@ant-design/icons'
 import { getMerchantDetail } from '@/api/merchant'
 import { getFoodList } from '@/api/food'
 import { createCollection, deleteCollection, checkCollection, getCollectionList } from '@/api/collection'
 import './MerchantDetail.css'
-
-const { TabPane } = Tabs
 
 function MerchantDetail() {
   const { id } = useParams()
@@ -18,7 +26,6 @@ function MerchantDetail() {
   const [total, setTotal] = useState(0)
   const [activeTab, setActiveTab] = useState('food')
   const [isCollected, setIsCollected] = useState(false)
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
 
   useEffect(() => {
     fetchMerchantDetail()
@@ -108,6 +115,23 @@ function MerchantDetail() {
     }
   }
 
+  const getAuditStatusConfig = (status) => {
+    const config = {
+      APPROVED: { text: '已认证', className: 'approved' },
+      PENDING: { text: '待审核', className: 'pending' },
+      REJECTED: { text: '已驳回', className: 'rejected' }
+    }
+    return config[status] || { text: status, className: '' }
+  }
+
+  const getStatusConfig = (status) => {
+    const config = {
+      ACTIVE: { text: '营业中', className: 'active' },
+      DISABLED: { text: '已停业', className: 'disabled' }
+    }
+    return config[status] || { text: status, className: '' }
+  }
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -122,132 +146,174 @@ function MerchantDetail() {
     )
   }
 
+  const auditConfig = getAuditStatusConfig(merchant.auditStatus)
+  const statusConfig = getStatusConfig(merchant.status)
+
   return (
     <div className="merchant-detail">
+      {/* 返回按钮 */}
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={goBack}
-        style={{ marginBottom: 16 }}
+        className="back-btn"
       >
         返回
       </Button>
 
-      <Card
-        title="商家详情"
-        className="merchant-info-card"
-      >
-        <Descriptions column={2} bordered>
-          <Descriptions.Item label="店铺名称">
-            <span className="shop-name">{merchant.shopName}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="审核状态">
-            <Tag color={
-              merchant.auditStatus === 'APPROVED' ? 'green' :
-              merchant.auditStatus === 'PENDING' ? 'orange' : 'red'
-            }>
-              {merchant.auditStatus === 'APPROVED' ? '已审核' :
-                merchant.auditStatus === 'PENDING' ? '待审核' : '已驳回'}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="店铺状态">
-            <Tag color={merchant.status === 'ACTIVE' ? 'green' : 'red'}>
-              {merchant.status === 'ACTIVE' ? '营业中' : '已禁用'}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="地址">
-            <span className="merchant-address">
-              <EnvironmentOutlined />
-              {merchant.address || '暂无地址'}
-            </span>
-          </Descriptions.Item>
-          <Descriptions.Item label="营业时间">
-            <span className="business-hours">
-              <ShopOutlined />
-              {merchant.openingHours || '暂无营业时间'}
-            </span>
-          </Descriptions.Item>
-          <Descriptions.Item label="评分" span={2}>
+      {/* 商家主卡片 */}
+      <Card className="merchant-main-card">
+        <div className="merchant-detail-content">
+          {/* 商家头部 */}
+          <div className="merchant-header">
+            <div className="merchant-logo-wrapper">
+              <span className="merchant-logo">🏪</span>
+            </div>
+            <div className="merchant-info-header">
+              <h1 className="shop-name">{merchant.shopName}</h1>
+              <div className="merchant-status-tags">
+                <Tag className={`status-tag ${auditConfig.className}`}>
+                  {auditConfig.text}
+                </Tag>
+                <Tag className={`status-tag ${statusConfig.className}`}>
+                  {statusConfig.text}
+                </Tag>
+              </div>
+            </div>
+          </div>
+
+          {/* 商家评分 */}
+          <div className="merchant-rating-section">
             <Rate
               disabled
-              defaultValue={4}
+              defaultValue={4.5}
               allowHalf
-              style={{ fontSize: 16 }}
             />
             <span className="rating-text">4.5分</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="店铺描述" span={2}>
+          </div>
+
+          {/* 商家信息 */}
+          <div className="merchant-info-grid">
+            <div className="info-item">
+              <div className="info-label">
+                <EnvironmentOutlined />
+                店铺地址
+              </div>
+              <div className="info-value">
+                {merchant.address || '暂无地址'}
+              </div>
+            </div>
+            <div className="info-item">
+              <div className="info-label">
+                <ClockCircleOutlined />
+                营业时间
+              </div>
+              <div className="info-value">
+                {merchant.openingHours || '暂无营业时间'}
+              </div>
+            </div>
+          </div>
+
+          {/* 商家描述 */}
+          <div className="merchant-description-section">
+            <h4>店铺介绍</h4>
             <p className="merchant-description">
               {merchant.description || '暂无描述'}
             </p>
-          </Descriptions.Item>
-        </Descriptions>
+          </div>
 
-        {/* 收藏按钮 */}
-        <Button
-          type={isCollected ? 'default' : 'primary'}
-          icon={<HeartOutlined />}
-          onClick={handleCollection}
-          size="large"
-          style={{ marginTop: 16 }}
-        >
-          {isCollected ? '已收藏' : '收藏'}
-        </Button>
+          {/* 收藏按钮 */}
+          <Button
+            type={isCollected ? 'default' : 'primary'}
+            icon={isCollected ? <HeartFilled /> : <HeartOutlined />}
+            onClick={handleCollection}
+            size="large"
+            className={`merchant-collection-btn ${isCollected ? 'collected' : ''}`}
+          >
+            {isCollected ? '已收藏' : '收藏店铺'}
+          </Button>
+        </div>
       </Card>
 
-      <Card className="content-card">
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab={`菜品列表 (${total})`} key="food">
-            {foods.length > 0 ? (
-              <List
-                grid={{ gutter: [24, 24], xs: 1, sm: 2, md: 3, lg: 4 }}
-                dataSource={foods}
-                renderItem={(food) => (
-                  <List.Item key={food.foodId}>
-                    <Card
-                      hoverable
-                      cover={
-                        food.imageUrl ? (
-                          <img
-                            alt={food.name}
-                            src={food.imageUrl}
-                            className="food-image"
+      {/* 菜品列表卡片 */}
+      <Card className="merchant-content-card">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={[
+            {
+              key: 'food',
+              label: (
+                <span>
+                  <CoffeeOutlined />
+                  菜品列表 ({total})
+                </span>
+              ),
+              children: (
+                foods.length > 0 ? (
+                  <List
+                    grid={{ gutter: [24, 24], xs: 1, sm: 2, md: 3, lg: 4 }}
+                    dataSource={foods}
+                    renderItem={(food) => (
+                      <List.Item key={food.foodId}>
+                        <Card
+                          hoverable
+                          className="merchant-food-card"
+                          cover={
+                            food.imageUrl ? (
+                              <img
+                                alt={food.name}
+                                src={food.imageUrl}
+                                className="food-image"
+                              />
+                            ) : (
+                              <div className="food-image-placeholder">
+                                <CoffeeOutlined />
+                              </div>
+                            )
+                          }
+                          onClick={() => goToFoodDetail(food.foodId)}
+                        >
+                          <Card.Meta
+                            title={food.name}
+                            description={
+                              <>
+                                <div className="food-info">
+                                  <span className="category-name">{food.categoryName}</span>
+                                </div>
+                                <div className="food-rating">
+                                  <Rate disabled defaultValue={Number(food.ratingAvg)} allowHalf />
+                                  <span className="rating-count">{food.ratingAvg || '0.0'}分</span>
+                                </div>
+                                <div className="food-sales">
+                                  <FireOutlined />
+                                  <span>销量: {food.salesCount}</span>
+                                </div>
+                              </>
+                            }
                           />
-                        ) : null
-                      }
-                      onClick={() => goToFoodDetail(food.foodId)}
-                    >
-                      <Card.Meta
-                        title={
-                          <span>{food.name}</span>
-                        }
-                        description={
-                          <>
-                            <div className="food-info">
-                              <span className="category-name">{food.categoryName}</span>
-                            </div>
-                            <div className="food-rating">
-                              <Rate disabled defaultValue={Number(food.ratingAvg)} allowHalf />
-                              <span className="rating-count">{food.ratingAvg}分</span>
-                            </div>
-                            <div className="food-sales">
-                              <StarOutlined />
-                              <span>销量: {food.salesCount}</span>
-                            </div>
-                          </>
-                        }
-                      />
-                    </Card>
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <Empty description="该商家暂无菜品" />
-            )}
-          </TabPane>
-          <TabPane tab="评价列表" key="review">
-            <Empty description="评价功能开发中..." />
-          </TabPane>
-        </Tabs>
+                        </Card>
+                      </List.Item>
+                    )}
+                  />
+                ) : (
+                  <Empty description="该商家暂无菜品" />
+                )
+              )
+            },
+            {
+              key: 'review',
+              label: (
+                <span>
+                  <StarOutlined />
+                  用户评价
+                </span>
+              ),
+              children: (
+                <Empty description="评价功能开发中..." />
+              )
+            }
+          ]}
+        />
       </Card>
     </div>
   )

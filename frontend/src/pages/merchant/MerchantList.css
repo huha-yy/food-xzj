@@ -1,9 +1,4 @@
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
+/* ========== 商家列表页 - 美食主题 ========== */
 
 .merchant-list {
   max-width: 1200px;
@@ -11,30 +6,199 @@
   padding: 24px;
 }
 
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 32px;
+  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  border-radius: 20px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+/* 筛选卡片 */
 .filter-card {
   margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: none;
+}
+
+.filter-card .ant-card-body {
+  padding: 20px 24px;
+}
+
+.filter-card .ant-input-affix-wrapper {
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+  padding: 10px 16px;
+  transition: all 0.3s;
+}
+
+.filter-card .ant-input-affix-wrapper:hover,
+.filter-card .ant-input-affix-wrapper:focus {
+  border-color: #ff6b35;
+}
+
+.filter-card .ant-input-affix-wrapper-focused {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.filter-card .ant-input-prefix {
+  color: #ff6b35;
+}
+
+.filter-card .ant-select-selector {
+  border-radius: 10px !important;
+  border: 2px solid #f0f0f0 !important;
+  height: 44px !important;
+  padding: 6px 16px !important;
+}
+
+.filter-card .ant-select-focused .ant-select-selector {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1) !important;
+}
+
+.filter-card .ant-btn-primary {
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+}
+
+.filter-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* 商家卡片 */
+.merchant-list .ant-list-item {
+  padding-bottom: 0 !important;
+}
+
+.merchant-list .ant-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  background: white;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.merchant-list .ant-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(232, 65, 24, 0.15);
+}
+
+.merchant-list .ant-card-cover {
+  overflow: hidden;
 }
 
 .merchant-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  background: #f5f5f5;
+  transition: transform 0.5s;
+}
+
+.merchant-list .ant-card:hover .merchant-image {
+  transform: scale(1.08);
+}
+
+.merchant-image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ff6b35;
+}
+
+.merchant-image-placeholder .anticon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.merchant-image-placeholder span {
+  font-size: 14px;
+  color: #e84118;
+}
+
+.merchant-list .ant-card-body {
+  padding: 16px;
 }
 
 .merchant-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.merchant-title span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.merchant-title .ant-tag {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 12px;
 }
 
 .merchant-info {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 10px;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+.merchant-info .anticon {
+  color: #ff6b35;
 }
 
 .merchant-rating {
@@ -44,41 +208,100 @@
   margin-bottom: 8px;
 }
 
+.merchant-rating .ant-rate {
+  font-size: 14px;
+}
+
+.merchant-rating .ant-rate-star-full .anticon {
+  color: #ff6b35;
+}
+
 .rating-count {
-  font-size: 12px;
-  color: #999;
+  font-size: 14px;
+  color: #ff6b35;
+  font-weight: 600;
 }
 
 .merchant-hours {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: #666;
+  gap: 6px;
+  font-size: 13px;
+  color: #888;
 }
 
+.merchant-hours .anticon {
+  color: #ff6b35;
+}
+
+/* 分页 */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 16px;
-  margin-top: 24px;
-  padding: 16px 0;
+  margin-top: 32px;
+  padding: 24px;
   background: white;
-  border-radius: 8px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
+.pagination .ant-btn {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  height: 36px;
+  padding: 0 20px;
+  font-weight: 500;
+}
+
+.pagination .ant-btn:hover:not(:disabled) {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.pagination span {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 空状态 */
+.merchant-list .ant-empty {
+  padding: 80px 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.merchant-list .ant-empty-description {
+  color: #999;
+}
+
+/* 响应式 */
 @media (max-width: 768px) {
   .merchant-list {
     padding: 16px;
   }
 
-  .filter-card {
-    padding: 16px;
+  .page-header {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .merchant-image {
+    height: 160px;
+  }
+
+  .merchant-image-placeholder {
+    height: 160px;
   }
 
   .pagination {
-    padding: 12px 0;
+    padding: 16px;
+    gap: 12px;
   }
 }
-

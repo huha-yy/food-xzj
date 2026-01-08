@@ -1,40 +1,164 @@
-/* 首页头部 */
+/* ========== 首页样式 - 美食主题 ========== */
+
+/* 首页头部 - 搜索区 */
 .home-header {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
-  padding: 60px 24px;
-  margin-bottom: 24px;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  padding: 60px 24px 50px;
+  margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.header-content {
-  max-width: 1200px;
+/* 头部装饰背景 */
+.home-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* 浮动食物装饰 */
+.header-food-decoration {
+  position: absolute;
+  font-size: 35px;
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.header-food-decoration:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+.header-food-decoration:nth-child(2) { top: 20%; right: 10%; animation-delay: 2s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+.home-header-content {
+  max-width: 600px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
-.header-title h1 {
+.home-header-title h1 {
   color: #fff;
   font-size: 32px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.header-title p {
-  color: rgba(255, 255, 255, 0.85);
+.home-header-title p {
+  color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  font-weight: 400;
 }
 
-.header-search {
+.home-header-search {
   display: flex;
   justify-content: center;
+}
+
+/* 搜索框样式 */
+.home-header-search .ant-input-search {
+  max-width: 500px !important;
+  width: 100%;
+}
+
+.home-header-search .ant-input-group-wrapper {
+  width: 100%;
+}
+
+.home-header-search .ant-input-wrapper {
+  background: white;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.home-header-search .ant-input-affix-wrapper {
+  background: white;
+  border: none;
+  padding: 12px 20px;
+}
+
+.home-header-search .ant-input {
+  font-size: 15px;
+  background: transparent;
+}
+
+.home-header-search .ant-input::placeholder {
+  color: #999;
+}
+
+.home-header-search .ant-input-group-addon {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.home-header-search .ant-btn {
+  height: 48px !important;
+  width: 56px !important;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  border: none !important;
+  border-radius: 0 25px 25px 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-header-search .ant-btn:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%) !important;
+}
+
+.home-header-search .ant-btn .anticon {
+  font-size: 18px;
+  color: white;
+}
+
+/* 快捷标签 */
+.header-quick-tags {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.quick-tag {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.quick-tag:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 /* 分类标签 */
 .category-tabs {
   background: #fff;
-  padding: 16px 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 20px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .category-scroll {
@@ -44,8 +168,6 @@
   gap: 12px;
   overflow-x: auto;
   padding: 4px 0;
-
-  /* 隐藏滚动条但保留功能 */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -56,48 +178,86 @@
 
 .category-btn {
   flex-shrink: 0;
-  border-radius: 20px;
-  height: 36px;
-  padding: 0 20px;
+  border-radius: 25px;
+  height: 40px;
+  padding: 0 24px;
   font-size: 14px;
+  font-weight: 500;
   transition: all 0.3s;
+  border: 2px solid transparent;
 }
 
-/* 覆盖 Ant Design 按钮主题色 */
+.category-btn.ant-btn-default {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #666;
+}
+
+.category-btn.ant-btn-default:hover {
+  background: #fff5f0;
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
 .category-btn.ant-btn-primary {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
   border: none;
+  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
 }
 
 .category-btn.ant-btn-primary:hover {
-  background: linear-gradient(135deg, #ff5252 0%, #ff9100 100%);
-}
-
-.category-btn.ant-btn-primary:focus {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
-}
-
-.category-btn:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
 }
 
 /* 首页内容 */
 .home-content {
   max-width: 1200px;
-  margin: 0 auto 24px;
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
 /* 公告栏 */
 .announcement-card {
-  margin-bottom: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 32px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.announcement-card .ant-card-head {
+  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  border-bottom: none;
+  padding: 16px 24px;
+}
+
+.announcement-card .ant-card-head-title {
+  color: #e84118;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #e84118;
+}
+
+.card-title .anticon {
+  font-size: 18px;
 }
 
 .announcement-item {
   padding: 16px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.3s;
+}
+
+.announcement-item:hover {
+  background: #fafafa;
 }
 
 .announcement-item:last-child {
@@ -117,8 +277,8 @@
 
 .announcement-title {
   font-size: 15px;
-  font-weight: 500;
-  color: #ff6b6b;
+  font-weight: 600;
+  color: #333;
   flex: 1;
 }
 
@@ -129,37 +289,47 @@
 }
 
 .announcement-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.7;
   white-space: pre-wrap;
 }
 
-/* 卡片标题 */
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
+/* 菜品卡片 */
+.food-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  background: white;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-/* 菜品卡片 */
+.food-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(232, 65, 24, 0.15);
+}
+
 .food-image {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.food-card:hover .food-image {
+  transform: scale(1.08);
 }
 
 .food-image-placeholder {
   width: 100%;
-  height: 180px;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 50%, #ffcc80 100%);
+  height: 200px;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 50%, #ffd6c9 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #ff6b6b;
+  color: #ff6b35;
   position: relative;
   overflow: hidden;
 }
@@ -171,29 +341,25 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
   animation: rotate 20s linear infinite;
 }
 
 @keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .placeholder-icon {
   font-size: 64px;
-  color: #ff6b6b;
+  color: #ff6b35;
   z-index: 1;
   margin-bottom: 12px;
   transition: transform 0.3s;
 }
 
 .food-card.no-image:hover .placeholder-icon {
-  transform: scale(1.1);
+  transform: scale(1.15) rotate(10deg);
 }
 
 .placeholder-text {
@@ -206,21 +372,27 @@
 .placeholder-text span:first-child {
   font-size: 16px;
   font-weight: 600;
-  color: #ff6b6b;
+  color: #ff6b35;
   margin-bottom: 4px;
 }
 
 .placeholder-hint {
   font-size: 12px;
-  color: #ff9800;
+  color: #e84118;
   opacity: 0.8;
+}
+
+/* 卡片内容 */
+.food-card .ant-card-body {
+  padding: 20px;
 }
 
 .food-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 
 .food-title span {
@@ -228,174 +400,199 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+}
+
+.food-title .ant-tag {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.food-description {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .food-info {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  color: #666;
-  font-size: 12px;
+  gap: 6px;
+  color: #888;
+  font-size: 13px;
+}
+
+.food-info .anticon {
+  color: #ff6b35;
 }
 
 .food-rating {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+}
+
+.food-rating .ant-rate {
+  font-size: 14px;
+}
+
+.food-rating .ant-rate-star-full .anticon {
+  color: #ff6b35;
 }
 
 .rating-count {
-  font-size: 12px;
-  color: #666;
-  font-weight: 500;
+  font-size: 14px;
+  color: #ff6b35;
+  font-weight: 600;
 }
 
 .food-sales {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #ff4d4f;
+  gap: 6px;
+  font-size: 13px;
+  color: #e84118;
   font-weight: 500;
 }
 
-/* 卡片描述容器 */
-.food-description {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 100px;
+.food-sales .anticon {
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* 列表项 */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* 列表样式 */
 .ant-list-item {
   padding-bottom: 0 !important;
   display: flex;
 }
 
-/* 确保列表项高度一致 */
-.ant-list-item .ant-col {
-  height: 100%;
-  display: flex;
-}
-
-/* 确保所有卡片在一行中高度一致 */
 .ant-col {
   display: flex;
   align-items: stretch;
 }
 
-/* 卡片样式 */
-.ant-card {
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.ant-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-}
-
-.ant-card-cover {
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.ant-card-cover img {
-  transition: transform 0.3s;
-}
-
-.ant-card:hover .ant-card-cover img {
-  transform: scale(1.05);
-}
-
-/* 确保卡片内容区域高度一致 */
-.ant-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100px;
-}
-
 /* 标签页样式 */
+.ant-tabs {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
 .ant-tabs-top > .ant-tabs-nav {
   margin-bottom: 24px;
+}
+
+.ant-tabs-nav::before {
+  border-bottom: 2px solid #f0f0f0;
 }
 
 .ant-tabs-tab {
   font-size: 15px;
   padding: 12px 24px;
   color: #666;
+  transition: all 0.3s;
+}
+
+.ant-tabs-tab:hover {
+  color: #ff6b35;
 }
 
 .ant-tabs-tab-active .ant-tabs-tab-btn {
   font-weight: 600;
-  font-size: 15px;
-  color: #ff6b6b;
+  color: #ff6b35 !important;
 }
 
-/* 标签页下划线颜色 */
 .ant-tabs-ink-bar {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  height: 3px !important;
+  border-radius: 3px;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .home-header {
-    padding: 40px 16px;
+    padding: 50px 16px;
   }
 
   .header-title h1 {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   .header-title p {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .header-search .ant-input-search {
     max-width: 100% !important;
   }
 
+  .header-search .ant-input {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .header-search .ant-input-search-button {
+    height: 46px !important;
+    width: 50px !important;
+  }
+
+  .header-quick-tags {
+    display: none;
+  }
+
   .category-tabs {
-    padding: 12px 16px;
+    padding: 16px;
   }
 
   .home-content {
-    padding: 0 16px;
+    padding: 20px 16px;
   }
 
-  .food-image {
-    height: 150px;
-  }
-
+  .food-image,
   .food-image-placeholder {
-    height: 150px;
+    height: 160px;
   }
 
   .placeholder-icon {
     font-size: 48px;
   }
+
+  .ant-tabs {
+    padding: 16px;
+    border-radius: 12px;
+  }
 }
 
 @media (max-width: 576px) {
+  .home-header {
+    padding: 40px 16px;
+  }
+
   .header-title h1 {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .category-btn {
     padding: 0 16px;
+    height: 36px;
     font-size: 13px;
+  }
+
+  .food-title span {
+    font-size: 15px;
   }
 }
 
@@ -409,5 +606,14 @@
 
 /* 骨架屏 */
 .ant-skeleton-image {
-  border-radius: 12px 12px 0 0;
+  border-radius: 16px 16px 0 0;
+}
+
+/* 空状态 */
+.ant-empty {
+  padding: 60px 0;
+}
+
+.ant-empty-description {
+  color: #999;
 }

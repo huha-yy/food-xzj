@@ -1,7 +1,97 @@
-.filter-card {
-  margin-bottom: 24px;
+/* ========== 菜品列表页 - 美食主题 ========== */
+
+.food-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 32px;
+  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  border-radius: 20px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+/* 筛选卡片 */
+.filter-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: none;
+}
+
+.filter-card .ant-card-body {
+  padding: 20px 24px;
+}
+
+.filter-card .ant-input-affix-wrapper {
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+  padding: 10px 16px;
+  transition: all 0.3s;
+}
+
+.filter-card .ant-input-affix-wrapper:hover,
+.filter-card .ant-input-affix-wrapper:focus {
+  border-color: #ff6b35;
+}
+
+.filter-card .ant-input-affix-wrapper-focused {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.filter-card .ant-input-prefix {
+  color: #ff6b35;
+}
+
+.filter-card .ant-select-selector {
+  border-radius: 10px !important;
+  border: 2px solid #f0f0f0 !important;
+  height: 44px !important;
+  padding: 6px 16px !important;
+}
+
+.filter-card .ant-select-focused .ant-select-selector {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1) !important;
+}
+
+.filter-card .ant-btn-primary {
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+}
+
+.filter-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
+}
+
+/* 加载状态 */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -9,17 +99,72 @@
   min-height: 400px;
 }
 
+/* 菜品卡片 */
+.food-list .ant-list-item {
+  padding-bottom: 0 !important;
+}
+
+.food-list .ant-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  background: white;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.food-list .ant-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(232, 65, 24, 0.15);
+}
+
+.food-list .ant-card-cover {
+  overflow: hidden;
+}
+
 .food-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.food-list .ant-card:hover .food-image {
+  transform: scale(1.08);
+}
+
+.food-image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ff6b35;
+}
+
+.food-image-placeholder .anticon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.food-image-placeholder span {
+  font-size: 14px;
+  color: #e84118;
+}
+
+.food-list .ant-card-body {
+  padding: 16px;
 }
 
 .food-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 
 .food-title span {
@@ -27,12 +172,34 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.food-title .ant-tag {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 .food-info {
-  margin-bottom: 8px;
-  color: #666;
-  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.food-info span {
+  display: inline-block;
+  font-size: 12px;
+  color: #ff6b35;
+  background: #fff5f0;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid #ffd6c9;
 }
 
 .food-rating {
@@ -42,32 +209,114 @@
   margin-bottom: 8px;
 }
 
+.food-rating .ant-rate {
+  font-size: 14px;
+}
+
+.food-rating .ant-rate-star-full .anticon {
+  color: #ff6b35;
+}
+
 .rating-count {
-  font-size: 12px;
-  color: #999;
+  font-size: 14px;
+  color: #ff6b35;
+  font-weight: 600;
 }
 
 .food-sales {
-  font-size: 14px;
-  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #e84118;
+  font-weight: 500;
 }
 
+/* 分页 */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-.ant-list-item {
-  padding-bottom: 0 !important;
+.pagination .ant-pagination-item {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
 }
 
-.ant-card {
-  transition: transform 0.3s, box-shadow 0.3s;
+.pagination .ant-pagination-item:hover {
+  border-color: #ff6b35;
 }
 
-.ant-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+.pagination .ant-pagination-item a {
+  color: #666;
 }
 
+.pagination .ant-pagination-item:hover a {
+  color: #ff6b35;
+}
+
+.pagination .ant-pagination-item-active {
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+}
+
+.pagination .ant-pagination-item-active a {
+  color: white;
+}
+
+.pagination .ant-pagination-prev .ant-pagination-item-link,
+.pagination .ant-pagination-next .ant-pagination-item-link {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+}
+
+.pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+/* 空状态 */
+.food-list .ant-empty {
+  padding: 80px 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.food-list .ant-empty-description {
+  color: #999;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .food-list {
+    padding: 16px;
+  }
+
+  .page-header {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .food-image {
+    height: 160px;
+  }
+
+  .food-image-placeholder {
+    height: 160px;
+  }
+
+  .pagination {
+    padding: 16px;
+  }
+}

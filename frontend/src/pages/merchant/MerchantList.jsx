@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, List, Input, Select, Tag, Rate, Button, Empty, Spin, Row, Col } from 'antd'
-import { SearchOutlined, ShopOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import { SearchOutlined, ShopOutlined, EnvironmentOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getMerchantList } from '@/api/merchant'
 import './MerchantList.css'
@@ -59,7 +59,12 @@ function MerchantList() {
               src={merchant.coverImage}
               className="merchant-image"
             />
-          ) : null
+          ) : (
+            <div className="merchant-image-placeholder">
+              <ShopOutlined />
+              <span>暂无图片</span>
+            </div>
+          )
         }
         onClick={() => goToMerchantDetail(merchant.merchantId)}
       >
@@ -67,7 +72,7 @@ function MerchantList() {
           title={
             <div className="merchant-title">
               <span>{merchant.shopName}</span>
-              <Tag color="green">营业中</Tag>
+              <Tag>{merchant.status === 'ACTIVE' ? '营业中' : '已停业'}</Tag>
             </div>
           }
           description={
@@ -77,11 +82,11 @@ function MerchantList() {
                 <span>{merchant.address || '暂无地址'}</span>
               </div>
               <div className="merchant-rating">
-                <Rate disabled defaultValue={4} allowHalf />
+                <Rate disabled defaultValue={4.5} allowHalf />
                 <span className="rating-count">4.5分</span>
               </div>
               <div className="merchant-hours">
-                <ShopOutlined />
+                <ClockCircleOutlined />
                 <span>{merchant.openingHours || '暂无营业时间'}</span>
               </div>
             </div>

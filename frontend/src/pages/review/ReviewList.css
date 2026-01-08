@@ -1,9 +1,4 @@
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
+/* ========== 评价列表页 - 美食主题 ========== */
 
 .review-list {
   max-width: 1200px;
@@ -11,24 +6,54 @@
   padding: 24px;
 }
 
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 32px;
+  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
+  border-radius: 20px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
 /* 统计卡片 */
 .stats-card {
-  background: linear-gradient(135deg, #fff5f5 0%, #fff9e6 100%);
+  background: linear-gradient(135deg, #fff8f5 0%, #fff0eb 100%);
   border: none;
-  border-radius: 12px;
+  border-radius: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
+  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1);
+  padding: 8px 0;
 }
 
 .stats-card .ant-statistic-title {
-  color: #666;
+  color: #888;
   font-size: 14px;
   font-weight: 500;
 }
 
 .stats-card .ant-statistic-content {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.stats-card .ant-statistic-content-prefix {
+  margin-right: 8px;
 }
 
 /* 骨架屏 */
@@ -40,172 +65,445 @@
 
 .stats-card-skeleton {
   background: white;
-  border-radius: 12px;
+  border-radius: 20px;
   margin-bottom: 24px;
   padding: 24px;
 }
 
 .review-item-skeleton {
   background: white;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-bottom: 16px;
-  padding: 20px;
+  padding: 24px;
 }
 
+/* 筛选卡片 */
 .filter-card {
   margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: none;
+}
+
+.filter-card .ant-card-body {
+  padding: 20px 24px;
 }
 
 .filter-row {
   display: flex;
   gap: 12px;
   align-items: center;
-}
-
-.review-item {
-  padding: 20px 0;
-  background: white;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
-  transition: all 0.3s ease;
-}
-
-.review-item:hover {
-  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.2);
-  transform: translateY(-2px);
-}
-
-.review-food {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  color: #666;
-  font-size: 14px;
-}
-
-.food-name {
-  color: #ff6b6b;
-  cursor: pointer;
-  transition: color 0.3s;
-  font-weight: 500;
-}
-
-.food-name:hover {
-  color: #ffa502;
-  text-decoration: underline;
-}
-
-.review-text {
-  line-height: 1.6;
-  color: #333;
   margin-bottom: 12px;
 }
 
-.review-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+.filter-row:last-child {
+  margin-bottom: 0;
+}
+
+.filter-card .ant-input-affix-wrapper {
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+  padding: 10px 16px;
+  transition: all 0.3s;
+}
+
+.filter-card .ant-input-affix-wrapper:hover,
+.filter-card .ant-input-affix-wrapper-focused {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.filter-card .ant-input-prefix {
+  color: #ff6b35;
+}
+
+.filter-card .ant-select-selector {
+  border-radius: 10px !important;
+  border: 2px solid #f0f0f0 !important;
+  height: 44px !important;
+  padding: 6px 16px !important;
+}
+
+.filter-card .ant-select-focused .ant-select-selector {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1) !important;
+}
+
+.filter-card .ant-btn-primary {
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  border: none;
+  font-weight: 600;
+  padding: 0 24px;
+  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+}
+
+.filter-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 65, 24, 0.4);
+}
+
+/* 评价列表容器 */
+.review-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 单个评价卡片 */
+.review-item-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.review-item-card:hover {
+  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.12);
+  border-color: #ffd6c9;
+  transform: translateY(-4px);
+}
+
+/* 评价头部 */
+.review-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.review-user-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.review-avatar {
+  width: 52px;
+  height: 52px;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+}
+
+.review-user-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.review-username {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-time {
+  font-size: 13px;
+  color: #999;
+}
+
+/* 评分区域 */
+.review-rating-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.review-rating-section .ant-rate {
+  font-size: 16px;
+}
+
+.review-rating-section .ant-rate-star-full .anticon {
+  color: #ff6b35;
+}
+
+.review-score-tag {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff6b35;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  padding: 4px 14px;
+  border-radius: 14px;
+}
+
+/* 关联菜品 */
+.review-food-link {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 12px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  border-radius: 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid #ffd6c9;
+}
+
+.review-food-link:hover {
+  background: linear-gradient(135deg, #ffe8df 0%, #ffd6c9 100%);
+  transform: translateX(4px);
+}
+
+.review-food-link .anticon {
+  color: #ff6b35;
+  font-size: 16px;
+}
+
+.review-food-name {
+  color: #e84118;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 评价内容 */
+.review-content-section {
+  margin-bottom: 16px;
+}
+
+.review-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #333;
+  padding: 16px 20px;
+  background: #fafafa;
+  border-radius: 12px;
+  border-left: 4px solid #ff6b35;
+  margin: 0;
+}
+
+/* 评价图片 */
+.review-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.review-image-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.review-image-wrapper .ant-image {
+  display: block;
 }
 
 .review-image-item {
-  width: 100%;
-  height: 100px;
+  width: 120px !important;
+  height: 120px !important;
   object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-.review-image-item:hover {
+.review-image-wrapper:hover .review-image-item {
   transform: scale(1.05);
+}
+
+/* 评价底部 */
+.review-item-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px dashed #e8e8e8;
 }
 
 .review-interactions {
   display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 12px;
+  gap: 10px;
 }
 
 .interaction-btn {
-  transition: all 0.3s ease;
+  border-radius: 20px !important;
+  padding: 6px 18px !important;
+  height: 36px !important;
+  font-size: 14px !important;
+  color: #666 !important;
+  border: 1px solid #e8e8e8 !important;
+  background: white !important;
+  transition: all 0.3s !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.interaction-btn:hover:not(:disabled) {
+  color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  background: #fff5f0 !important;
+}
+
+.interaction-btn .anticon {
+  font-size: 16px;
   color: #999;
+  transition: color 0.3s;
 }
 
-.interaction-btn:hover {
-  color: #666;
-  background: #f5f5f5;
-}
-
-.interaction-btn:active {
-  transform: scale(0.95);
+.interaction-btn:hover:not(:disabled) .anticon {
+  color: #ff6b35;
 }
 
 .interaction-btn.liked {
-  color: #ff6b6b;
+  color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  background: #fff5f0 !important;
 }
 
-.interaction-btn.liked:hover {
-  color: #ff5252;
-  background: #fff0f0;
+.interaction-btn.liked .anticon {
+  color: #ff6b35;
 }
 
 .interaction-btn.disliked {
-  color: #666;
+  color: #666 !important;
+  border-color: #999 !important;
+  background: #f5f5f5 !important;
 }
 
-.interaction-btn.disliked:hover {
-  color: #333;
-  background: #f5f5f5;
+.cancel-btn {
+  color: #999 !important;
+  border-color: #e8e8e8 !important;
 }
 
-.interaction-btn.cancel-btn {
-  color: #999;
-  font-size: 12px;
+.cancel-btn:hover {
+  color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
 }
 
-.interaction-btn.cancel-btn:hover {
-  color: #ff6b6b;
-  background: #fff0f0;
-}
-
+/* 分页 */
 .pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 20px 24px;
   background: white;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-top: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.pagination > span {
+  font-size: 14px;
+  color: #666;
 }
 
 .page-buttons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
+.page-buttons .ant-btn {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  height: 38px;
+  padding: 0 20px;
+  font-weight: 500;
+}
+
+.page-buttons .ant-btn:hover:not(:disabled) {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.page-buttons span {
+  font-size: 14px;
+  color: #666;
+  padding: 0 8px;
+}
+
+/* 空状态 */
+.review-list .ant-empty {
+  padding: 80px 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* 响应式 */
 @media (max-width: 768px) {
   .review-list {
     padding: 16px;
   }
 
-  .filter-card {
-    padding: 16px;
+  .page-header {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .review-item-card {
+    padding: 20px;
+  }
+
+  .review-item-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-rating-section {
+    align-items: flex-start;
+  }
+
+  .review-image-item {
+    width: 100px !important;
+    height: 100px !important;
   }
 
   .pagination {
-    padding: 12px;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    padding: 16px;
   }
 
   .filter-row {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .filter-card .ant-btn-primary {
+    width: 100%;
+  }
+
+  .review-item-footer {
+    justify-content: flex-start;
+  }
 }
 
+@media (max-width: 576px) {
+  .review-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .review-username {
+    font-size: 15px;
+  }
+
+  .review-image-item {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  .interaction-btn {
+    padding: 4px 14px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+}

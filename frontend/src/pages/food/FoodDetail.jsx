@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Descriptions, Rate, Button, Tag, List, Avatar, message, Spin, Empty, Tabs } from 'antd'
-import { HeartOutlined, ShopOutlined, StarOutlined, ArrowLeftOutlined, LikeOutlined, DislikeOutlined, EditOutlined } from '@ant-design/icons'
+import { Card, Rate, Button, Tag, List, Avatar, message, Spin, Empty } from 'antd'
+import {
+  HeartOutlined,
+  HeartFilled,
+  ShopOutlined,
+  StarOutlined,
+  ArrowLeftOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+  EditOutlined,
+  FireOutlined,
+  CoffeeOutlined
+} from '@ant-design/icons'
 import { getFoodDetail } from '@/api/food'
 import { getReviewList, likeReview, dislikeReview, cancelInteraction } from '@/api/review'
 import { createCollection, deleteCollection, checkCollection, getCollectionList } from '@/api/collection'
@@ -156,6 +167,12 @@ function FoodDetail() {
     navigate(-1)
   }
 
+  const goToMerchant = () => {
+    if (food?.merchantId) {
+      navigate(`/merchants/${food.merchantId}`)
+    }
+  }
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -176,78 +193,110 @@ function FoodDetail() {
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={goBack}
-        style={{ marginBottom: 16 }}
+        className="back-btn"
       >
         返回
       </Button>
 
-      {/* 菜品信息 */}
-      <Card
-        title="菜品详情"
-        className="food-info-card"
-      >
-        <Descriptions column={2} bordered>
-          <Descriptions.Item label="菜品名称">
-            <span className="food-name">{food.name}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="价格">
-            <Tag color="red" className="price-tag">¥{food.price}</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="分类">
-            <Tag color="blue">{food.categoryName}</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="评分">
-            <Rate
-              disabled
-              defaultValue={Number(food.ratingAvg)}
-              allowHalf
-              style={{ fontSize: 14 }}
-            />
-            <span className="rating-text">{food.ratingAvg}分</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="销量">
-            <Tag color="orange">{food.salesCount}份</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="状态">
-            <Tag color={food.status === 'ON_SHELF' ? 'green' : 'red'}>
+      {/* 菜品主卡片 */}
+      <Card className="food-main-card">
+        <div className="food-detail-content">
+          {/* 左侧图片区域 */}
+          <div className="food-image-section">
+            {/* 状态标签 */}
+            <span className={`food-status-badge ${food.status === 'ON_SHELF' ? 'on-shelf' : 'off-shelf'}`}>
               {food.status === 'ON_SHELF' ? '在售' : '已下架'}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="菜品描述" span={2}>
-            {food.description || '暂无描述'}
-          </Descriptions.Item>
-        </Descriptions>
+            </span>
 
-        {/* 菜品图片 */}
-        {food.imageUrl && (
-          <div className="food-image">
-            <img src={food.imageUrl} alt={food.name} />
+            {food.imageUrl ? (
+              <img src={food.imageUrl} alt={food.name} />
+            ) : (
+              <div className="food-image-placeholder">
+                <CoffeeOutlined className="placeholder-icon" />
+                <span>暂无图片</span>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* 收藏按钮（所有登录用户都可以看到） */}
-        <Button
-          type={isCollected ? 'default' : 'primary'}
-          icon={<HeartOutlined />}
-          onClick={handleCollection}
-          size="large"
-          className="collection-btn"
-        >
-          {isCollected ? '已收藏' : '收藏'}
-        </Button>
+          {/* 右侧信息区域 */}
+          <div className="food-info-section">
+            <div className="food-header">
+              <h1 className="food-name">
+                {food.name}
+                <Tag className="food-category-tag">{food.categoryName}</Tag>
+              </h1>
+              <div className="food-merchant" onClick={goToMerchant}>
+                <ShopOutlined />
+                <span>{food.merchantName}</span>
+              </div>
+            </div>
 
-        {/* 发表评价按钮（只有学生才显示） */}
-        {isStudent && (
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => setReviewModalVisible(true)}
-            size="large"
-            style={{ marginTop: 12 }}
-          >
-            发表评价
-          </Button>
-        )}
+            {/* 价格和评分 */}
+            <div className="food-price-rating">
+              <div className="food-price">
+                <span className="price-label">价格</span>
+                <span className="price-value">
+                  <small>¥</small>{food.price}
+                </span>
+              </div>
+              <div className="food-rating-info">
+                <span className="rating-label">用户评分</span>
+                <div className="rating-content">
+                  <Rate
+                    disabled
+                    defaultValue={Number(food.ratingAvg)}
+                    allowHalf
+                  />
+                  <span className="rating-score">{food.ratingAvg || '0.0'}分</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 销量信息 */}
+            <div className="food-stats">
+              <div className="stat-item">
+                <FireOutlined />
+                <span>月销量 <strong>{food.salesCount}</strong> 份</span>
+              </div>
+              <div className="stat-item">
+                <StarOutlined />
+                <span>评价 <strong>{total}</strong> 条</span>
+              </div>
+            </div>
+
+            {/* 菜品描述 */}
+            <div className="food-description">
+              <h4>菜品描述</h4>
+              <p>{food.description || '暂无描述'}</p>
+            </div>
+
+            {/* 操作按钮 */}
+            <div className="food-actions">
+              <Button
+                type={isCollected ? 'default' : 'primary'}
+                icon={isCollected ? <HeartFilled /> : <HeartOutlined />}
+                onClick={handleCollection}
+                size="large"
+                className={`collection-btn ${isCollected ? 'collected' : ''}`}
+              >
+                {isCollected ? '已收藏' : '收藏'}
+              </Button>
+
+              {/* 发表评价按钮（只有学生才显示） */}
+              {isStudent && (
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => setReviewModalVisible(true)}
+                  size="large"
+                  className="review-btn"
+                >
+                  发表评价
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
       </Card>
 
       {/* 评价Modal */}
@@ -264,88 +313,101 @@ function FoodDetail() {
 
       {/* 评价列表 */}
       <Card
-        title="用户评价"
+        title={
+          <div className="review-card-title">
+            <StarOutlined />
+            <span>用户评价</span>
+          </div>
+        }
         className="review-card"
         extra={
           <span className="review-count">共 {total} 条评价</span>
         }
       >
         {reviews.length > 0 ? (
-          <List
-            dataSource={reviews}
-            renderItem={(review) => (
-              <List.Item className="review-item">
-                <List.Item.Meta
-                  avatar={
+          <div className="review-list-wrapper">
+            {reviews.map((review) => (
+              <div key={review.reviewId} className="review-item-card">
+                <div className="review-item-header">
+                  <div className="review-user-info">
                     <Avatar
                       src={review.avatar}
                       icon={<StarOutlined />}
-                      size="large"
+                      size={48}
+                      className="review-avatar"
                     />
-                  }
-                  title={
-                    <div className="review-header">
-                      <span className="username">{review.username}</span>
-                      <Rate
-                        disabled
-                        defaultValue={review.rating}
-                        allowHalf
-                        style={{ fontSize: 12 }}
-                      />
-                      <span className="review-time">{review.createTime}</span>
+                    <div className="review-user-detail">
+                      <div className="review-username">{review.username}</div>
+                      <div className="review-time">{review.createTime}</div>
                     </div>
-                  }
-                  description={
-                    <div className="review-content">
-                      <div className="review-text">{review.content}</div>
-                      {/* 评价图片 */}
-                      {review.imageUrls && review.imageUrls.length > 0 && (
-                        <div className="review-images">
-                          {review.imageUrls.map((url, index) => (
-                            <img
-                              key={index}
-                              src={url}
-                              alt={`评价图片${index + 1}`}
-                              className="review-image"
-                            />
-                          ))}
+                  </div>
+                  <div className="review-rating-box">
+                    <Rate
+                      disabled
+                      defaultValue={review.rating}
+                      allowHalf
+                      className="review-stars"
+                    />
+                    <span className="review-score">{review.rating}分</span>
+                  </div>
+                </div>
+
+                <div className="review-item-body">
+                  <p className="review-text">{review.content}</p>
+
+                  {/* 评价图片 */}
+                  {review.imageUrls && review.imageUrls.length > 0 && (
+                    <div className="review-images">
+                      {review.imageUrls.map((url, index) => (
+                        <div key={index} className="review-image-wrapper">
+                          <img
+                            src={url}
+                            alt={`评价图片${index + 1}`}
+                            className="review-image"
+                          />
                         </div>
-                      )}
-                      <div className="review-interactions">
-                        <Button
-                          type="text"
-                          size="small"
-                          icon={<LikeOutlined />}
-                          onClick={() => handleLike(review.reviewId)}
-                          disabled={review.isLiked}
-                        >
-                          {review.likeCount}
-                        </Button>
-                        <Button
-                          type="text"
-                          size="small"
-                          icon={<DislikeOutlined />}
-                          onClick={() => handleDislike(review.reviewId)}
-                          disabled={review.isDisliked}
-                        >
-                          {review.dislikeCount}
-                        </Button>
-                        {review.isLiked && (
-                          <Button
-                            type="text"
-                            size="small"
-                            onClick={() => handleCancelInteraction(review.reviewId)}
-                          >
-                            取消
-                          </Button>
-                        )}
-                      </div>
+                      ))}
                     </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
+                  )}
+                </div>
+
+                <div className="review-item-footer">
+                  <div className="review-interactions">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<LikeOutlined />}
+                      onClick={() => handleLike(review.reviewId)}
+                      disabled={review.isLiked}
+                      className={`interaction-btn ${review.isLiked ? 'active' : ''}`}
+                    >
+                      {review.likeCount > 0 ? review.likeCount : '赞'}
+                    </Button>
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<DislikeOutlined />}
+                      onClick={() => handleDislike(review.reviewId)}
+                      disabled={review.isDisliked}
+                      className={`interaction-btn ${review.isDisliked ? 'active' : ''}`}
+                    >
+                      {review.dislikeCount > 0 ? review.dislikeCount : '踩'}
+                    </Button>
+                    {review.isLiked && (
+                      <Button
+                        type="text"
+                        size="small"
+                        onClick={() => handleCancelInteraction(review.reviewId)}
+                        className="cancel-btn"
+                      >
+                        取消
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <Empty description="暂无评价" />
         )}

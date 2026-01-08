@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, List, Input, Select, Tag, Rate, Button, Empty, Spin, Avatar, Image, Statistic, Row, Col, Skeleton } from 'antd'
-import { SearchOutlined, ShopOutlined, StarOutlined, ArrowLeftOutlined, LikeOutlined, DislikeOutlined, CommentOutlined, FireOutlined } from '@ant-design/icons'
+import { Card, Input, Select, Tag, Rate, Button, Empty, Spin, Avatar, Image, Statistic, Row, Col, Skeleton } from 'antd'
+import { SearchOutlined, ShopOutlined, StarOutlined, LikeOutlined, DislikeOutlined, CommentOutlined, FireOutlined, CoffeeOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getReviewList, likeReview, dislikeReview, cancelInteraction, getReviewStatistics } from '@/api/review'
 import './ReviewList.css'
@@ -9,7 +9,6 @@ const { Option } = Select
 
 function ReviewList() {
   const navigate = useNavigate()
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
   const [loading, setLoading] = useState(true)
   const [reviewList, setReviewList] = useState([])
   const [total, setTotal] = useState(0)
@@ -45,14 +44,6 @@ function ReviewList() {
 
   const handleSearch = () => {
     setParams({ ...params, current: 1 })
-  }
-
-  const handlePageChange = (page, pageSize) => {
-    setParams({ ...params, page, pageSize })
-  }
-
-  const goBack = () => {
-    navigate(-1)
   }
 
   const handleLike = async (reviewId) => {
@@ -119,7 +110,7 @@ function ReviewList() {
                 title="总评价数"
                 value={statistics.totalCount}
                 prefix={<CommentOutlined />}
-                valueStyle={{ color: '#ff6b6b' }}
+                valueStyle={{ color: '#ff6b35' }}
               />
             </Col>
             <Col xs={24} sm={8}>
@@ -129,7 +120,7 @@ function ReviewList() {
                 precision={1}
                 suffix="分"
                 prefix={<StarOutlined />}
-                valueStyle={{ color: '#ffa502' }}
+                valueStyle={{ color: '#e84118' }}
               />
             </Col>
             <Col xs={24} sm={8}>
@@ -137,7 +128,7 @@ function ReviewList() {
                 title="今日新增"
                 value={statistics.todayCount}
                 prefix={<FireOutlined />}
-                valueStyle={{ color: '#ff6b6b' }}
+                valueStyle={{ color: '#ff6b35' }}
               />
             </Col>
           </Row>
@@ -156,11 +147,6 @@ function ReviewList() {
             allowClear
             style={{ flex: 1 }}
           />
-          <Button type="primary" onClick={handleSearch}>
-            搜索
-          </Button>
-        </div>
-        <div className="filter-row">
           <Select
             placeholder="审核状态"
             allowClear
@@ -171,100 +157,108 @@ function ReviewList() {
             <Option value="APPROVED">已审核</Option>
             <Option value="PENDING">待审核</Option>
           </Select>
+          <Button type="primary" onClick={handleSearch}>
+            搜索
+          </Button>
         </div>
       </Card>
 
       {/* 评价列表 */}
       {reviewList.length > 0 ? (
         <>
-          <List
-            dataSource={reviewList}
-            renderItem={(review) => (
-              <List.Item className="review-item">
-                <List.Item.Meta
-                  avatar={
+          <div className="review-list-container">
+            {reviewList.map((review) => (
+              <div key={review.reviewId} className="review-item-card">
+                {/* 头部：用户信息和评分 */}
+                <div className="review-item-header">
+                  <div className="review-user-section">
                     <Avatar
                       src={review.avatar}
                       icon={<StarOutlined />}
-                      size="large"
+                      size={52}
+                      className="review-avatar"
                     />
-                  }
-                  title={
-                    <div className="review-header">
-                      <span className="username">{review.username}</span>
-                      <Rate
-                        disabled
-                        defaultValue={review.rating}
-                        allowHalf
-                        style={{ fontSize: 12 }}
-                      />
-                      <span className="review-time">{review.createTime}</span>
+                    <div className="review-user-detail">
+                      <div className="review-username">{review.username}</div>
+                      <div className="review-time">{review.createTime}</div>
                     </div>
-                  }
-                  description={
-                    <div className="review-content">
-                      <div className="review-food">
-                        <ShopOutlined />
-                        <span
-                          className="food-name"
-                          onClick={() => goToFoodDetail(review.foodId)}
-                        >
-                          {review.foodName}
-                        </span>
-                      </div>
-                      <div className="review-text">{review.content}</div>
-                      {review.imageUrls && review.imageUrls.length > 0 && (
-                        <div className="review-images">
-                          <Image.PreviewGroup>
-                            {review.imageUrls.map((url, index) => (
-                              <Image
-                                key={index}
-                                src={url}
-                                alt={`评价图片${index + 1}`}
-                                className="review-image-item"
-                              />
-                            ))}
-                          </Image.PreviewGroup>
-                        </div>
-                      )}
-                      <div className="review-interactions">
-                        <Button
-                          type="text"
-                          size="small"
-                          icon={<LikeOutlined />}
-                          onClick={() => handleLike(review.reviewId)}
-                          disabled={review.isLiked}
-                          className={`interaction-btn ${review.isLiked ? 'liked' : ''}`}
-                        >
-                          {review.likeCount}
-                        </Button>
-                        <Button
-                          type="text"
-                          size="small"
-                          icon={<DislikeOutlined />}
-                          onClick={() => handleDislike(review.reviewId)}
-                          disabled={review.isDisDisliked}
-                          className={`interaction-btn ${review.isDisliked ? 'disliked' : ''}`}
-                        >
-                          {review.dislikeCount}
-                        </Button>
-                        {(review.isLiked || review.isDisliked) && (
-                          <Button
-                            type="text"
-                            size="small"
-                            onClick={() => handleCancelInteraction(review.reviewId)}
-                            className="interaction-btn cancel-btn"
-                          >
-                            取消
-                          </Button>
-                        )}
-                      </div>
+                  </div>
+                  <div className="review-rating-section">
+                    <Rate
+                      disabled
+                      defaultValue={review.rating}
+                      allowHalf
+                    />
+                    <span className="review-score-tag">{review.rating}分</span>
+                  </div>
+                </div>
+
+                {/* 关联菜品 */}
+                <div
+                  className="review-food-link"
+                  onClick={() => goToFoodDetail(review.foodId)}
+                >
+                  <CoffeeOutlined />
+                  <span className="review-food-name">{review.foodName}</span>
+                </div>
+
+                {/* 评价内容 */}
+                <div className="review-content-section">
+                  <p className="review-text">{review.content}</p>
+
+                  {/* 评价图片 */}
+                  {review.imageUrls && review.imageUrls.length > 0 && (
+                    <div className="review-images">
+                      <Image.PreviewGroup>
+                        {review.imageUrls.map((url, index) => (
+                          <div key={index} className="review-image-wrapper">
+                            <Image
+                              src={url}
+                              alt={`评价图片${index + 1}`}
+                              className="review-image-item"
+                            />
+                          </div>
+                        ))}
+                      </Image.PreviewGroup>
                     </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
+                  )}
+                </div>
+
+                {/* 底部交互 */}
+                <div className="review-item-footer">
+                  <div className="review-interactions">
+                    <Button
+                      type="text"
+                      icon={<LikeOutlined />}
+                      onClick={() => handleLike(review.reviewId)}
+                      disabled={review.isLiked}
+                      className={`interaction-btn ${review.isLiked ? 'liked' : ''}`}
+                    >
+                      {review.likeCount > 0 ? review.likeCount : '赞'}
+                    </Button>
+                    <Button
+                      type="text"
+                      icon={<DislikeOutlined />}
+                      onClick={() => handleDislike(review.reviewId)}
+                      disabled={review.isDisliked}
+                      className={`interaction-btn ${review.isDisliked ? 'disliked' : ''}`}
+                    >
+                      {review.dislikeCount > 0 ? review.dislikeCount : '踩'}
+                    </Button>
+                    {(review.isLiked || review.isDisliked) && (
+                      <Button
+                        type="text"
+                        onClick={() => handleCancelInteraction(review.reviewId)}
+                        className="interaction-btn cancel-btn"
+                      >
+                        取消
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
 
           {/* 分页 */}
           <div className="pagination">

@@ -1,27 +1,150 @@
+/* ========== 全局布局样式 - 美食主题 ========== */
+
+/* Logo区域 */
 .logo {
-  height: 64px;
+  height: 72px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #001529;
-  color: white;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  position: relative;
   overflow: hidden;
+  padding: 12px;
+}
+
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+}
+
+.logo-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+  z-index: 1;
 }
 
 .logo h2 {
   color: white;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 700;
   margin: 0;
   white-space: nowrap;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
 }
 
+/* 折叠后的 Logo */
+.logo-collapsed {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  font-size: 32px;
+}
+
+/* 侧边栏 */
+.ant-layout-sider {
+  box-shadow: 4px 0 20px rgba(232, 65, 24, 0.15) !important;
+  z-index: 1000;
+  background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%) !important;
+}
+
+.ant-layout-sider-light {
+  background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%) !important;
+}
+
+/* 侧边栏菜单 */
+.ant-layout-sider .ant-menu {
+  border-right: none;
+  background: transparent !important;
+}
+
+.ant-menu-light {
+  background: transparent !important;
+}
+
+.ant-menu-light .ant-menu-item {
+  color: #666;
+  font-weight: 500;
+  margin: 4px 8px;
+  border-radius: 10px;
+  height: 48px;
+  line-height: 48px;
+  transition: all 0.3s;
+}
+
+.ant-menu-light .ant-menu-item:hover {
+  color: #ff6b35;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%) !important;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  color: white !important;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(232, 65, 24, 0.3);
+}
+
+.ant-menu-light .ant-menu-item-selected .anticon {
+  color: white !important;
+}
+
+.ant-menu-light .ant-menu-item .anticon {
+  font-size: 18px;
+  color: #ff6b35;
+}
+
+.ant-menu-light .ant-menu-item-selected .anticon {
+  color: white;
+}
+
+/* 侧边栏滚动条 */
+.ant-layout-sider::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-layout-sider::-webkit-scrollbar-track {
+  background: #fff5f0;
+}
+
+.ant-layout-sider::-webkit-scrollbar-thumb {
+  background: #ffd6c9;
+  border-radius: 3px;
+}
+
+.ant-layout-sider::-webkit-scrollbar-thumb:hover {
+  background: #ff6b35;
+}
+
+/* 折叠按钮 */
+.ant-layout-sider-trigger {
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ant-layout-sider-trigger:hover {
+  background: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%) !important;
+}
+
+/* 顶部Header */
 .header {
   background: white;
-  padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #ff6b35 0%, #e84118 100%);
+  border-image-slice: 1;
 }
 
 .header-content {
@@ -34,33 +157,75 @@
 }
 
 .header-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #001529;
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b35 0%, #e84118 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+.header-title-icon {
+  font-size: 26px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* 用户信息区域 */
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: all 0.3s;
+  background: white;
+  border: 1px solid #f0f0f0;
 }
 
 .user-info:hover {
-  background-color: #f0f2f5;
+  background: #fff5f0;
+  border-color: #ff6b35;
+  box-shadow: 0 2px 8px rgba(232, 65, 24, 0.1);
+}
+
+.user-info .ant-avatar {
+  border: 2px solid #ff6b35;
+  flex-shrink: 0;
+}
+
+.user-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .username {
   font-size: 14px;
-  color: #001529;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
 }
 
+.user-role {
+  font-size: 11px;
+  color: #ff6b35;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+/* 内容区域 */
 .content {
-  background: #f0f2f5;
+  background: #fafafa;
   min-height: calc(100vh - 64px);
   transition: margin-left 0.2s;
 }
@@ -71,6 +236,28 @@
   margin: 0 auto;
 }
 
+/* 下拉菜单样式 */
+.ant-dropdown-menu {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+}
+
+.ant-dropdown-menu-item {
+  border-radius: 8px;
+  padding: 10px 16px;
+  transition: all 0.3s;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8df 100%);
+  color: #ff6b35;
+}
+
+.ant-dropdown-menu-item .anticon {
+  color: #ff6b35;
+}
+
 /* 移动端响应式 */
 @media (max-width: 768px) {
   .header {
@@ -78,43 +265,52 @@
   }
 
   .header-title {
-    font-size: 16px;
+    font-size: 18px;
+  }
+
+  .header-title-icon {
+    font-size: 22px;
   }
 
   .username {
     display: none;
   }
 
+  .user-role {
+    display: none;
+  }
+
   .content-wrapper {
     padding: 16px;
   }
+
+  .logo h2 {
+    font-size: 14px;
+  }
 }
 
-/* 固定侧边栏样式优化 */
-.ant-layout-sider {
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+@media (max-width: 576px) {
+  .header-title {
+    font-size: 16px;
+  }
+
+  .user-info {
+    padding: 6px 10px;
+  }
 }
 
-.ant-layout-sider .ant-menu {
-  border-right: none;
+/* 动画效果 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* 侧边栏滚动条样式优化 */
-.ant-layout-sider::-webkit-scrollbar {
-  width: 6px;
+.ant-menu-item {
+  animation: slideIn 0.3s ease-out;
 }
-
-.ant-layout-sider::-webkit-scrollbar-track {
-  background: #001529;
-}
-
-.ant-layout-sider::-webkit-scrollbar-thumb {
-  background: #4a5568;
-  border-radius: 3px;
-}
-
-.ant-layout-sider::-webkit-scrollbar-thumb:hover {
-  background: #5c6b7f;
-}
-

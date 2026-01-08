@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Card, List, Tag, Rate, Button, Input, Select, Row, Col, Pagination, Empty, Spin } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { SearchOutlined, CoffeeOutlined, FireOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getFoodList } from '@/api/food'
 import './FoodList.css'
@@ -111,7 +111,12 @@ const [params, setParams] = useState({
                         src={food.imageUrl}
                         className="food-image"
                       />
-                    ) : null
+                    ) : (
+                      <div className="food-image-placeholder">
+                        <CoffeeOutlined />
+                        <span>暂无图片</span>
+                      </div>
+                    )
                   }
                   onClick={() => goToFoodDetail(food.foodId)}
                 >
@@ -119,7 +124,7 @@ const [params, setParams] = useState({
                     title={
                       <div className="food-title">
                         <span>{food.name}</span>
-                        <Tag color="red">¥{food.price}</Tag>
+                        <Tag>¥{food.price}</Tag>
                       </div>
                     }
                     description={
@@ -129,10 +134,11 @@ const [params, setParams] = useState({
                         </div>
                         <div className="food-rating">
                           <Rate disabled defaultValue={parseFloat(food.ratingAvg || 0)} allowHalf />
-                          <span className="rating-count">({food.ratingAvg || 0}分)</span>
+                          <span className="rating-count">{food.ratingAvg || '0.0'}分</span>
                         </div>
                         <div className="food-sales">
-                          销量: {food.salesCount || 0}
+                          <FireOutlined />
+                          <span>销量: {food.salesCount || 0}</span>
                         </div>
                       </div>
                     }

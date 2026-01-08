@@ -8,7 +8,8 @@ import {
   HeartOutlined,
   UserOutlined,
   LogoutOutlined,
-  DashboardOutlined
+  DashboardOutlined,
+  CoffeeOutlined
 } from '@ant-design/icons'
 import './Layout.css'
 
@@ -20,6 +21,13 @@ function Layout() {
   const location = useLocation()
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
 
+  // 角色显示映射
+  const roleMap = {
+    STUDENT: '学生',
+    MERCHANT: '商家',
+    ADMIN: '管理员'
+  }
+
   // 菜单项
   const menuItems = [
     {
@@ -29,7 +37,7 @@ function Layout() {
     },
     {
       key: '/foods',
-      icon: <ShopOutlined />,
+      icon: <CoffeeOutlined />,
       label: '菜品'
     },
     {
@@ -55,7 +63,7 @@ function Layout() {
     ...(userInfo.role === 'ADMIN' ? [{
       key: '/admin/dashboard',
       icon: <DashboardOutlined />,
-      label: '管理员后台'
+      label: '管理后台'
     }] : []),
     {
       key: '/user',
@@ -102,7 +110,8 @@ function Layout() {
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        theme="dark"
+        theme="light"
+        width={220}
         style={{
           overflow: 'auto',
           height: '100vh',
@@ -112,21 +121,32 @@ function Layout() {
           bottom: 0
         }}
       >
-        <div className="logo">
-          <h2>美食评价</h2>
-        </div>
+        {/* Logo区域 */}
+        {collapsed ? (
+          <div className="logo-collapsed">🍜</div>
+        ) : (
+          <div className="logo">
+            <span className="logo-icon">🍜</span>
+            <h2>美食评价</h2>
+          </div>
+        )}
+
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={handleMenuClick}
         />
       </Sider>
-      <AntLayout style={{ marginLeft: collapsed ? 80 : 200 }}>
+
+      <AntLayout style={{ marginLeft: collapsed ? 80 : 220 }}>
         <Header className="header">
           <div className="header-content">
-            <h1 className="header-title">校园美食评价系统</h1>
+            <h1 className="header-title">
+              <span className="header-title-icon">🍽️</span>
+              校园美食评价系统
+            </h1>
             <Dropdown
               menu={{ items: userMenuItems }}
               placement="bottomRight"
@@ -135,9 +155,13 @@ function Layout() {
                 <Avatar
                   src={userInfo.avatar}
                   icon={<UserOutlined />}
-                  size="large"
+                  size={36}
+                  style={{ backgroundColor: '#ff6b35' }}
                 />
-                <span className="username">{userInfo.nickname || userInfo.username}</span>
+                <div className="user-info-content">
+                  <span className="username">{userInfo.nickname || userInfo.username}</span>
+                  <span className="user-role">{roleMap[userInfo.role] || '用户'}</span>
+                </div>
               </div>
             </Dropdown>
           </div>
@@ -153,4 +177,3 @@ function Layout() {
 }
 
 export default Layout
-

@@ -162,16 +162,26 @@ function Home() {
     />
   )
 
+  // 美食装饰图标（减少数量）
+  const headerFoodIcons = ['🍜', '🍕']
+
   return (
     <div className="home">
       {/* 顶部搜索栏 */}
       <div className="home-header">
-        <div className="header-content">
-          <div className="header-title">
+        {/* 浮动美食装饰 */}
+        {headerFoodIcons.map((icon, index) => (
+          <span key={index} className="header-food-decoration">
+            {icon}
+          </span>
+        ))}
+
+        <div className="home-header-content">
+          <div className="home-header-title">
             <h1>🍽️ 校园美食评价系统</h1>
             <p>发现校园美食，分享美食体验</p>
           </div>
-          <div className="header-search">
+          <div className="home-header-search">
             <Search
               placeholder="搜索菜品名称..."
               enterButton={<SearchOutlined />}
@@ -179,7 +189,7 @@ function Home() {
               allowClear
               onSearch={handleSearch}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              style={{ maxWidth: 500 }}
+              style={{ maxWidth: 500, width: '100%' }}
             />
           </div>
         </div>
