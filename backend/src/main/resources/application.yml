@@ -13,7 +13,7 @@ spring:
     username: root
     password: 123666888
 
-  # 文件上传配置
+  # 文件上传配置n
   servlet:
     multipart:
       max-file-size: 5MB
