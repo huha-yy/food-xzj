@@ -74,12 +74,16 @@ function Home() {
 
   const handleCategoryClick = async (categoryId) => {
     if (selectedCategory === categoryId) {
+      // 取消选择，返回热门推荐
       setSelectedCategory(null)
+      setSearchKeyword('')
+      setActiveTab('hot')
       return
     }
 
     try {
       setLoading(true)
+      setSelectedCategory(categoryId)
       const data = await getFoodList({ categoryId, current: 1, pageSize: 6 })
       setRecommendFoods(data?.records || [])
       setActiveTab('category')

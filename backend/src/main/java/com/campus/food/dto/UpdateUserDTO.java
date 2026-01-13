@@ -24,5 +24,11 @@ public class UpdateUserDTO {
      * 手机号
      */
     private String phone;
+
+    /**
+     * 学号（仅学生角色）
+     */
+    @Size(max = 16, message = "学号长度不能超过16位")
+    private String studentNo;
 }
 

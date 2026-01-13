@@ -38,11 +38,11 @@ const [params, setParams] = useState({
   }
 
   const handleSearch = () => {
-    setParams({ ...params, current: 1 })
+    setParams(prev => ({ ...prev, current: 1 }))
   }
 
   const handlePageChange = (current, pageSize) => {
-    setParams({ ...params, current, pageSize })
+    setParams(prev => ({ ...prev, current, pageSize }))
   }
 
   const goToFoodDetail = (id) => {
@@ -64,7 +64,7 @@ const [params, setParams] = useState({
               placeholder="搜索菜品"
               prefix={<SearchOutlined />}
               value={params.keyword}
-              onChange={(e) => setParams({ ...params, keyword: e.target.value })}
+              onChange={(e) => setParams(prev => ({ ...prev, keyword: e.target.value }))}
               onPressEnter={handleSearch}
             />
           </Col>
@@ -74,7 +74,7 @@ const [params, setParams] = useState({
               allowClear
               style={{ width: '100%' }}
               value={params.categoryId}
-              onChange={(value) => setParams({ ...params, categoryId: value, current: 1 })}
+              onChange={(value) => setParams(prev => ({ ...prev, categoryId: value, current: 1 }))}
             >
               <Option value={1}>小吃</Option>
               <Option value={2}>快餐</Option>
@@ -151,7 +151,7 @@ const [params, setParams] = useState({
           {/* 分页 */}
           <div className="pagination">
             <Pagination
-              current={params.page}
+              current={params.current}
               pageSize={params.pageSize}
               total={total}
               onChange={handlePageChange}

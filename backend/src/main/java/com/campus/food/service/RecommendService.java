@@ -17,6 +17,13 @@ public interface RecommendService {
     List<RecommendVO> getHotRecommend(Integer limit);
 
     /**
+     * 个性化推荐（更注重评分质量）
+     * @param limit 返回数量
+     * @return 推荐菜品列表
+     */
+    List<RecommendVO> getPersonalizedRecommend(Integer limit);
+
+    /**
      * 分类推荐（按分类推荐热门菜品）
      * @param categoryId 分类ID（如果为null，推荐所有分类）
      * @param limit 每个分类返回数量

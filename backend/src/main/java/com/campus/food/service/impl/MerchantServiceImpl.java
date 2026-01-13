@@ -121,6 +121,37 @@ public class MerchantServiceImpl extends ServiceImpl<MerchantMapper, Merchant> i
     }
 
     @Override
+    public MerchantVO getMerchantByUserId(Long userId) {
+        // 1. 通过用户ID查询商家信息
+        LambdaQueryWrapper<Merchant> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Merchant::getUserId, userId);
+        queryWrapper.eq(Merchant::getIsDeleted, 0);
+        Merchant merchant = merchantMapper.selectOne(queryWrapper);
+
+        if (merchant == null) {
+            throw new BusinessException(4005, "商家不存在");
+        }
+
+        // 2. 构建返回对象
+        MerchantVO merchantVO = new MerchantVO();
+        merchantVO.setMerchantId(merchant.getId());
+        merchantVO.setUserId(merchant.getUserId());
+        merchantVO.setShopName(merchant.getShopName());
+        merchantVO.setAddress(merchant.getAddress());
+        merchantVO.setDescription(merchant.getDescription());
+        merchantVO.setCoverImage(merchant.getCoverImage());
+        merchantVO.setCoordinateX(merchant.getCoordinateX());
+        merchantVO.setCoordinateY(merchant.getCoordinateY());
+        merchantVO.setOpeningHours(merchant.getOpeningHours());
+        merchantVO.setAuditStatus(merchant.getAuditStatus());
+        merchantVO.setStatus(merchant.getStatus());
+        merchantVO.setCreateTime(merchant.getCreateTime().toString());
+        merchantVO.setUpdateTime(merchant.getUpdateTime().toString());
+
+        return merchantVO;
+    }
+
+    @Override
     public IPage<MerchantVO> getMerchantList(MerchantQueryDTO merchantQueryDTO) {
         // 1. 构建分页对象
         Page<Merchant> page = new Page<>(merchantQueryDTO.getCurrent(), merchantQueryDTO.getPageSize());

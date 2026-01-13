@@ -57,6 +57,14 @@ public class MerchantController {
         return Result.success(merchantVO);
     }
 
+    @GetMapping("/current")
+    @Operation(summary = "获取当前登录商家信息")
+    @PreAuthorize("hasRole('MERCHANT')")
+    public Result<MerchantVO> getCurrentMerchant(@AuthenticationPrincipal SecurityUser securityUser) {
+        MerchantVO merchantVO = merchantService.getMerchantByUserId(securityUser.getUserId());
+        return Result.success(merchantVO);
+    }
+
     @GetMapping("/list")
     @Operation(summary = "商家列表查询")
     public Result<IPage<MerchantVO>> getMerchantList(MerchantQueryDTO merchantQueryDTO) {

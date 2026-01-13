@@ -29,6 +29,14 @@ public class RecommendController {
         return Result.success(recommendList);
     }
 
+    @Operation(summary = "个性化推荐")
+    @GetMapping("/personalized")
+    public Result<List<RecommendVO>> getPersonalizedRecommend(
+            @RequestParam(required = false) Integer limit) {
+        List<RecommendVO> recommendList = recommendService.getPersonalizedRecommend(limit);
+        return Result.success(recommendList);
+    }
+
     @Operation(summary = "分类推荐")
     @GetMapping("/category")
     public Result<List<RecommendVO>> getCategoryRecommend(

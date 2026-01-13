@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Rate, Button, Tag, List, Avatar, message, Spin, Empty } from 'antd'
+import { Card, Rate, Button, Tag, List, Avatar, message, Spin, Empty, Select, Progress, Input } from 'antd'
 import {
   HeartOutlined,
   HeartFilled,
@@ -11,13 +11,17 @@ import {
   DislikeOutlined,
   EditOutlined,
   FireOutlined,
-  CoffeeOutlined
+  CoffeeOutlined,
+  MessageOutlined
 } from '@ant-design/icons'
 import { getFoodDetail } from '@/api/food'
-import { getReviewList, likeReview, dislikeReview, cancelInteraction } from '@/api/review'
+import { getReviewList, likeReview, dislikeReview, cancelInteraction, getRatingDistribution, createReviewReply } from '@/api/review'
 import { createCollection, deleteCollection, checkCollection, getCollectionList } from '@/api/collection'
 import ReviewModal from '@/components/ReviewModal'
 import './FoodDetail.css'
+
+const { Option } = Select
+const { TextArea } = Input
 
 function FoodDetail() {
   const { id } = useParams()
@@ -29,11 +33,18 @@ function FoodDetail() {
   const [isCollected, setIsCollected] = useState(false)
   const [reviewModalVisible, setReviewModalVisible] = useState(false)
   const [reviewPage, setReviewPage] = useState(1)
+  const [ratingDistribution, setRatingDistribution] = useState(null)
+  const [sortBy, setSortBy] = useState('time')
+  const [sortOrder, setSortOrder] = useState('desc')
+  const [ratingFilter, setRatingFilter] = useState(null)
+  const [replyingReviewId, setReplyingReviewId] = useState(null)
+  const [replyContent, setReplyContent] = useState('')
   const pageSize = 10
 
   // 获取用户信息
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
   const isStudent = userInfo?.role === 'STUDENT'
+  const isMerchant = userInfo?.role === 'MERCHANT'
 
   useEffect(() => {
     // 检查 id 是否存在
@@ -45,9 +56,14 @@ function FoodDetail() {
 
     fetchFoodDetail()
     fetchReviews()
+    fetchRatingDistribution()
     // 所有登录用户都检查收藏状态
     checkCollectionStatus()
   }, [id])
+
+  useEffect(() => {
+    fetchReviews(reviewPage)
+  }, [sortBy, sortOrder, ratingFilter])
 
   const fetchFoodDetail = async () => {
     try {
@@ -72,12 +88,27 @@ function FoodDetail() {
       const data = await getReviewList({
         foodId: id,
         current: page,
-        pageSize
+        pageSize,
+        sortBy,
+        sortOrder,
+        rating: ratingFilter
       })
+      console.log('获取到的评价列表数据:', data)
+      console.log('第一条评价的标签:', data?.records?.[0]?.tags)
       setReviews(data?.records || [])
       setTotal(data?.total || 0)
     } catch (error) {
       console.error('获取评价列表失败:', error)
+    }
+  }
+
+  const fetchRatingDistribution = async () => {
+    if (!id) return
+    try {
+      const data = await getRatingDistribution(id)
+      setRatingDistribution(data)
+    } catch (error) {
+      console.error('获取评分分布失败:', error)
     }
   }
 
@@ -160,6 +191,26 @@ function FoodDetail() {
     } catch (error) {
       console.error('取消操作失败:', error)
       message.error('操作失败')
+    }
+  }
+
+  const handleReply = async (reviewId) => {
+    if (!replyContent.trim()) {
+      message.error('请输入回复内容')
+      return
+    }
+    try {
+      await createReviewReply({
+        reviewId,
+        content: replyContent
+      })
+      message.success('回复成功')
+      setReplyingReviewId(null)
+      setReplyContent('')
+      fetchReviews(reviewPage)
+    } catch (error) {
+      console.error('回复失败:', error)
+      message.error(error.response?.data?.message || '回复失败')
     }
   }
 
@@ -311,6 +362,45 @@ function FoodDetail() {
         }}
       />
 
+      {/* 评分分布 */}
+      {ratingDistribution && (
+        <Card className="rating-distribution-card" title="评分分布">
+          <div className="rating-summary">
+            <div className="rating-score">
+              <div className="score-number">{ratingDistribution.averageRating}</div>
+              <Rate disabled value={ratingDistribution.averageRating} allowHalf />
+              <div className="score-total">共 {ratingDistribution.totalCount} 条评价</div>
+            </div>
+            <div className="rating-bars">
+              {[5, 4, 3, 2, 1].map(star => {
+                // 使用对象映射，更清晰准确
+                const starCountMap = {
+                  5: ratingDistribution.fiveStarCount,
+                  4: ratingDistribution.fourStarCount,
+                  3: ratingDistribution.threeStarCount,
+                  2: ratingDistribution.twoStarCount,
+                  1: ratingDistribution.oneStarCount
+                }
+                const count = starCountMap[star] || 0
+                const percent = ratingDistribution.totalCount > 0 ? (count / ratingDistribution.totalCount * 100).toFixed(1) : 0
+                return (
+                  <div key={star} className="rating-bar-item">
+                    <span className="star-label">{star}星</span>
+                    <Progress
+                      percent={percent}
+                      strokeColor="#1677ff"
+                      showInfo={false}
+                      style={{ flex: 1 }}
+                    />
+                    <span className="count-label">{count}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* 评价列表 */}
       <Card
         title={
@@ -321,7 +411,39 @@ function FoodDetail() {
         }
         className="review-card"
         extra={
-          <span className="review-count">共 {total} 条评价</span>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Select
+              value={ratingFilter}
+              onChange={setRatingFilter}
+              style={{ width: 120 }}
+              placeholder="评分筛选"
+              allowClear
+            >
+              <Option value={5}>5星</Option>
+              <Option value={4}>4星</Option>
+              <Option value={3}>3星</Option>
+              <Option value={2}>2星</Option>
+              <Option value={1}>1星</Option>
+            </Select>
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              style={{ width: 120 }}
+            >
+              <Option value="time">按时间</Option>
+              <Option value="hot">按热度</Option>
+              <Option value="rating">按评分</Option>
+            </Select>
+            <Select
+              value={sortOrder}
+              onChange={setSortOrder}
+              style={{ width: 100 }}
+            >
+              <Option value="desc">降序</Option>
+              <Option value="asc">升序</Option>
+            </Select>
+            <span className="review-count">共 {total} 条</span>
+          </div>
         }
       >
         {reviews.length > 0 ? (
@@ -355,6 +477,23 @@ function FoodDetail() {
                 <div className="review-item-body">
                   <p className="review-text">{review.content}</p>
 
+                  {/* 评价标签 */}
+                  {review.tags && review.tags.length > 0 && (
+                    <div className="review-tags" style={{ marginTop: '8px', marginBottom: '8px' }}>
+                      {review.tags.map(tag => (
+                        <Tag
+                          key={tag.tagId}
+                          color={
+                            tag.type === 'POSITIVE' ? 'green' :
+                            tag.type === 'NEGATIVE' ? 'red' : 'blue'
+                          }
+                        >
+                          {tag.name}
+                        </Tag>
+                      ))}
+                    </div>
+                  )}
+
                   {/* 评价图片 */}
                   {review.imageUrls && review.imageUrls.length > 0 && (
                     <div className="review-images">
@@ -367,6 +506,24 @@ function FoodDetail() {
                           />
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {/* 商家回复 */}
+                  {review.reply && (
+                    <div className="merchant-reply" style={{
+                      marginTop: '12px',
+                      padding: '12px',
+                      backgroundColor: '#f5f5f5',
+                      borderRadius: '4px'
+                    }}>
+                      <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1677ff' }}>
+                        <ShopOutlined /> {review.reply.shopName} 回复：
+                      </div>
+                      <div>{review.reply.content}</div>
+                      <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                        {review.reply.createTime}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -393,7 +550,7 @@ function FoodDetail() {
                     >
                       {review.dislikeCount > 0 ? review.dislikeCount : '踩'}
                     </Button>
-                    {review.isLiked && (
+                    {(review.isLiked || review.isDisliked) && (
                       <Button
                         type="text"
                         size="small"
@@ -403,7 +560,50 @@ function FoodDetail() {
                         取消
                       </Button>
                     )}
+                    {isMerchant && !review.reply && (
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<MessageOutlined />}
+                        onClick={() => setReplyingReviewId(review.reviewId)}
+                      >
+                        回复
+                      </Button>
+                    )}
                   </div>
+
+                  {/* 商家回复输入框 */}
+                  {replyingReviewId === review.reviewId && (
+                    <div style={{ marginTop: '12px' }}>
+                      <TextArea
+                        rows={3}
+                        placeholder="输入回复内容..."
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        maxLength={500}
+                        showCount
+                      />
+                      <div style={{ marginTop: '8px', textAlign: 'right' }}>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            setReplyingReviewId(null)
+                            setReplyContent('')
+                          }}
+                          style={{ marginRight: '8px' }}
+                        >
+                          取消
+                        </Button>
+                        <Button
+                          type="primary"
+                          size="small"
+                          onClick={() => handleReply(review.reviewId)}
+                        >
+                          发送
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

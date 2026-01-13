@@ -107,7 +107,8 @@ function PersonalCenter() {
     editForm.setFieldsValue({
       nickname: userInfo?.nickname,
       phone: userInfo?.phone,
-      avatar: userInfo?.avatar
+      avatar: userInfo?.avatar,
+      studentNo: userInfo?.studentNo
     })
     setAvatarUrl(userInfo?.avatar || '')
     setEditModalVisible(true)
@@ -396,6 +397,13 @@ function PersonalCenter() {
             rules={[{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }]}
           >
             <Input placeholder="请输入手机号" maxLength={11} />
+          </Form.Item>
+          <Form.Item
+            name="studentNo"
+            label="学号"
+            rules={[{ max: 16, message: '学号长度不能超过16位' }]}
+          >
+            <Input placeholder="请输入学号（仅学生需要填写）" maxLength={16} />
           </Form.Item>
           <Form.Item>
             <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end' }}>

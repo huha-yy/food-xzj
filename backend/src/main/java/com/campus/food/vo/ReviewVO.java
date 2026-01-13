@@ -100,5 +100,15 @@ public class ReviewVO {
      * 创建时间
      */
     private String createTime;
+
+    /**
+     * 商家回复
+     */
+    private ReviewReplyVO reply;
+
+    /**
+     * 评价标签列表
+     */
+    private List<ReviewTagVO> tags;
 }
 

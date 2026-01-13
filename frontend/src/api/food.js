@@ -23,9 +23,20 @@ export function getHotFoods(params) {
 }
 
 /**
- * 获取分类推荐
+ * 获取个性化推荐（智能推荐）
  */
 export function getRecommendFoods(params) {
+  return request({
+    url: '/recommend/personalized',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取分类推荐
+ */
+export function getCategoryRecommend(params) {
   return request({
     url: '/recommend/category',
     method: 'get',

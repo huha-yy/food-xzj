@@ -82,3 +82,65 @@ export function getReviewStatistics() {
   })
 }
 
+/**
+ * 获取评分分布统计
+ */
+export function getRatingDistribution(foodId) {
+  return request({
+    url: '/reviews/rating-distribution',
+    method: 'get',
+    params: { foodId }
+  })
+}
+
+/**
+ * 创建商家回复
+ */
+export function createReviewReply(data) {
+  return request({
+    url: '/review-replies',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 删除商家回复
+ */
+export function deleteReviewReply(replyId) {
+  return request({
+    url: `/review-replies/${replyId}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 根据评价ID获取回复
+ */
+export function getReplyByReviewId(reviewId) {
+  return request({
+    url: `/review-replies/review/${reviewId}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取所有评价标签
+ */
+export function getAllReviewTags() {
+  return request({
+    url: '/review-tags/all',
+    method: 'get'
+  })
+}
+
+/**
+ * 根据评价ID获取标签
+ */
+export function getTagsByReviewId(reviewId) {
+  return request({
+    url: `/review-tags/review/${reviewId}`,
+    method: 'get'
+  })
+}
+

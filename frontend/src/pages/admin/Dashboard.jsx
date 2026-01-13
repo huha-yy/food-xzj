@@ -15,7 +15,8 @@ import {
   Space,
   Tabs,
   Popconfirm,
-  DatePicker
+  DatePicker,
+  Image
 } from 'antd'
 import {
   UserOutlined,
@@ -506,7 +507,7 @@ function Dashboard() {
           {record.status === 'ACTIVE' ? (
             <Popconfirm
               title="确定要禁用该用户吗？"
-              onConfirm={() => handleUserStatusChange(record.userId, 'INACTIVE')}
+              onConfirm={() => handleUserStatusChange(record.userId, 'DISABLED')}
               okText="确定"
               cancelText="取消"
             >
@@ -597,7 +598,7 @@ function Dashboard() {
           {record.status === 'ACTIVE' ? (
             <Popconfirm
               title="确定要禁用该商家吗？"
-              onConfirm={() => handleMerchantStatusChange(record.merchantId, 'INACTIVE')}
+              onConfirm={() => handleMerchantStatusChange(record.merchantId, 'DISABLED')}
               okText="确定"
               cancelText="取消"
             >
@@ -645,6 +646,36 @@ function Dashboard() {
       dataIndex: 'rating',
       key: 'rating',
       render: (rating) => `${rating}分`
+    },
+    {
+      title: '图片',
+      dataIndex: 'imageUrls',
+      key: 'imageUrls',
+      width: 120,
+      render: (imageUrls) => {
+        if (!imageUrls || imageUrls.length === 0) {
+          return <span style={{ color: '#999' }}>无图片</span>
+        }
+        return (
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <Image.PreviewGroup>
+              {imageUrls.slice(0, 2).map((url, index) => (
+                <Image
+                  key={index}
+                  src={url}
+                  alt={`评价图片${index + 1}`}
+                  width={40}
+                  height={40}
+                  style={{ objectFit: 'cover', borderRadius: '4px' }}
+                />
+              ))}
+            </Image.PreviewGroup>
+            {imageUrls.length > 2 && (
+              <span style={{ color: '#666', fontSize: '12px' }}>+{imageUrls.length - 2}</span>
+            )}
+          </div>
+        )
+      }
     },
     {
       title: '审核状态',

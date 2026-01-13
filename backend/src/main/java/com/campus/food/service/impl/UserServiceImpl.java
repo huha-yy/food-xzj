@@ -7,9 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.campus.food.dto.UpdateUserDTO;
 import com.campus.food.dto.UserQueryDTO;
+import com.campus.food.entity.Collection;
+import com.campus.food.entity.Review;
 import com.campus.food.entity.User;
 import com.campus.food.entity.UserProfile;
 import com.campus.food.exception.BusinessException;
+import com.campus.food.mapper.CollectionMapper;
+import com.campus.food.mapper.ReviewMapper;
 import com.campus.food.mapper.UserMapper;
 import com.campus.food.mapper.UserProfileMapper;
 import com.campus.food.service.UserService;
@@ -20,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * 用户服务实现
  */
@@ -29,6 +35,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final UserMapper userMapper;
     private final UserProfileMapper userProfileMapper;
+    private final CollectionMapper collectionMapper;
+    private final ReviewMapper reviewMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -95,7 +103,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         .eq(UserProfile::getIsDeleted, 0)
         );
 
-        // 3. 组装返回数据
+        // 3. 计算统计数据
+        // 3.1 收藏数量
+        Long collectionsCount = collectionMapper.selectCount(
+                new LambdaQueryWrapper<Collection>()
+                        .eq(Collection::getUserId, userId)
+        );
+
+        // 3.2 评价数量
+        Long reviewsCount = reviewMapper.selectCount(
+                new LambdaQueryWrapper<Review>()
+                        .eq(Review::getUserId, userId)
+        );
+
+        // 3.3 获得点赞数（统计用户所有评价的点赞总数）
+        List<Review> userReviews = reviewMapper.selectList(
+                new LambdaQueryWrapper<Review>()
+                        .eq(Review::getUserId, userId)
+                        .select(Review::getLikeCount)
+        );
+        Integer likesCount = userReviews.stream()
+                .mapToInt(review -> review.getLikeCount() != null ? review.getLikeCount() : 0)
+                .sum();
+
+        // 4. 组装返回数据
         UserVO userVO = UserVO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -107,6 +138,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .studentNo(profile != null ? profile.getStudentNo() : null)
                 .createTime(user.getCreateTime().toString())
                 .updateTime(user.getUpdateTime().toString())
+                .collectionsCount(collectionsCount.intValue())
+                .reviewsCount(reviewsCount.intValue())
+                .likesCount(likesCount)
                 .build();
 
         return userVO;
@@ -134,6 +168,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             profile.setNickname(updateUserDTO.getNickname());
             profile.setAvatar(updateUserDTO.getAvatar());
             profile.setPhone(updateUserDTO.getPhone());
+            profile.setStudentNo(updateUserDTO.getStudentNo());
             userProfileMapper.insert(profile);
         } else {
             // 资料存在则更新
@@ -149,6 +184,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             if (updateUserDTO.getPhone() != null) {
                 updateWrapper.set(UserProfile::getPhone, updateUserDTO.getPhone());
+            }
+            if (updateUserDTO.getStudentNo() != null) {
+                updateWrapper.set(UserProfile::getStudentNo, updateUserDTO.getStudentNo());
             }
 
             userProfileMapper.update(null, updateWrapper);

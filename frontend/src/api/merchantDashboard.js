@@ -65,6 +65,16 @@ export function getMerchantInfo(merchantId) {
 }
 
 /**
+ * 获取当前登录商家信息
+ */
+export function getCurrentMerchant() {
+  return request({
+    url: '/merchants/current',
+    method: 'get'
+  })
+}
+
+/**
  * 修改商家信息
  */
 export function updateMerchantInfo(merchantId, data) {

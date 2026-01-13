@@ -56,5 +56,10 @@ public interface ReviewService {
      * 获取评价统计数据
      */
     ReviewStatisticsVO getReviewStatistics();
+
+    /**
+     * 获取评分分布统计
+     */
+    com.campus.food.vo.RatingDistributionVO getRatingDistribution(Long foodId);
 }
 

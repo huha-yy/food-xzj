@@ -45,5 +45,10 @@ public class CreateReviewDTO {
      * 评价图片URL列表
      */
     private List<String> imageUrls;
+
+    /**
+     * 评价标签ID列表
+     */
+    private List<Long> tagIds;
 }
 

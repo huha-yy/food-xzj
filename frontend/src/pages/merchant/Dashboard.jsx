@@ -38,9 +38,11 @@ import {
   deleteFood,
   updateFoodStatus,
   getMerchantInfo,
-  updateMerchantInfo
+  updateMerchantInfo,
+  getCurrentMerchant
 } from '@/api/merchantDashboard'
 import { uploadImage } from '@/api/upload'
+import { getCategoryList } from '@/api/category'
 import './Dashboard.css'
 
 const { TextArea } = Input
@@ -51,6 +53,7 @@ function Dashboard() {
   const [foodList, setFoodList] = useState([])
   const [total, setTotal] = useState(0)
   const [merchantInfo, setMerchantInfo] = useState(null)
+  const [categoryList, setCategoryList] = useState([])
 
   // 菜品表单
   const [foodFormVisible, setFoodFormVisible] = useState(false)
@@ -71,8 +74,31 @@ function Dashboard() {
     status: undefined
   })
 
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || {})
-  const merchantId = userInfo?.userId // 商家的userId就是merchantId
+  // 获取当前商家信息
+  useEffect(() => {
+    fetchCurrentMerchant()
+    fetchCategories()
+  }, [])
+
+  const fetchCurrentMerchant = async () => {
+    try {
+      const data = await getCurrentMerchant()
+      setMerchantInfo(data)
+    } catch (error) {
+      console.error('获取商家信息失败:', error)
+      message.error('获取商家信息失败，请确保您已创建商家账号')
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategoryList()
+      setCategoryList(data || [])
+    } catch (error) {
+      console.error('获取分类列表失败:', error)
+      message.error('获取分类列表失败')
+    }
+  }
 
   // 获取统计数据
   const statsData = {
@@ -81,41 +107,27 @@ function Dashboard() {
     offShelf: foodList.filter(f => f.status === 'OFF_SHELF').length
   }
 
-  // 获取商家信息
+  // 获取菜品列表（在商家信息加载后）
   useEffect(() => {
-    fetchMerchantInfo()
-  }, [])
-
-  // 获取菜品列表
-  useEffect(() => {
-    fetchFoodList()
-  }, [params])
+    if (merchantInfo?.merchantId) {
+      fetchFoodList()
+    }
+  }, [params, merchantInfo?.merchantId])
 
   const fetchFoodList = async () => {
+    if (!merchantInfo?.merchantId) return
+
     try {
       setLoading(true)
       const response = await getMerchantFoodList({
         ...params,
-        merchantId: merchantId
+        merchantId: merchantInfo.merchantId
       })
       setFoodList(response.records || [])
       setTotal(response.total || 0)
     } catch (error) {
       console.error('获取菜品列表失败:', error)
       message.error('获取菜品列表失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchMerchantInfo = async () => {
-    try {
-      setLoading(true)
-      const response = await getMerchantInfo(merchantId)
-      setMerchantInfo(response)
-    } catch (error) {
-      console.error('获取商家信息失败:', error)
-      message.error('获取商家信息失败')
     } finally {
       setLoading(false)
     }
@@ -131,7 +143,7 @@ function Dashboard() {
     } else {
       setEditingFood(null)
       setFoodForm({
-        merchantId: merchantId,
+        merchantId: merchantInfo?.merchantId,
         name: '',
         categoryId: undefined,
         price: '',
@@ -147,7 +159,7 @@ function Dashboard() {
   const handleFoodSubmit = async () => {
     try {
       if (editingFood) {
-        await updateFood(editingFood.id, foodForm)
+        await updateFood(editingFood.foodId, foodForm)
         message.success('修改菜品成功')
       } else {
         await createFood(foodForm)
@@ -193,10 +205,10 @@ function Dashboard() {
   // 提交商家信息表单
   const handleMerchantSubmit = async () => {
     try {
-      await updateMerchantInfo(merchantId, merchantForm)
+      await updateMerchantInfo(merchantInfo?.merchantId, merchantForm)
       message.success('修改商家信息成功')
       setMerchantFormVisible(false)
-      fetchMerchantInfo()
+      fetchCurrentMerchant()
     } catch (error) {
       message.error('修改商家信息失败')
     }
@@ -304,7 +316,7 @@ function Dashboard() {
           {record.status === 'ON_SHELF' ? (
             <Popconfirm
               title="确定要下架该菜品吗？"
-              onConfirm={() => handleUpdateStatus(record.id, 'OFF_SHELF')}
+              onConfirm={() => handleUpdateStatus(record.foodId, 'OFF_SHELF')}
               okText="确定"
               cancelText="取消"
             >
@@ -315,7 +327,7 @@ function Dashboard() {
           ) : (
             <Popconfirm
               title="确定要上架该菜品吗？"
-              onConfirm={() => handleUpdateStatus(record.id, 'ON_SHELF')}
+              onConfirm={() => handleUpdateStatus(record.foodId, 'ON_SHELF')}
               okText="确定"
               cancelText="取消"
             >
@@ -326,7 +338,7 @@ function Dashboard() {
           )}
           <Popconfirm
             title="确定要删除该菜品吗？"
-            onConfirm={() => handleDeleteFood(record.id)}
+            onConfirm={() => handleDeleteFood(record.foodId)}
             okText="确定"
             cancelText="取消"
           >
@@ -442,14 +454,14 @@ function Dashboard() {
                   <Input.Search
                     placeholder="搜索菜品名称"
                     allowClear
-                    onSearch={(value) => setParams({ ...params, keyword: value, current: 1 })}
+                    onSearch={(value) => setParams(prev => ({ ...prev, keyword: value, current: 1 }))}
                     style={{ width: 300 }}
                   />
                   <Select
                     placeholder="筛选状态"
                     allowClear
                     style={{ width: 150, marginLeft: 16 }}
-                    onChange={(value) => setParams({ ...params, status: value, current: 1 })}
+                    onChange={(value) => setParams(prev => ({ ...prev, status: value, current: 1 }))}
                     value={params.status}
                   >
                     <Select.Option value="ON_SHELF">已上架</Select.Option>
@@ -460,13 +472,13 @@ function Dashboard() {
                 <Table
                   columns={foodColumns}
                   dataSource={foodList}
-                  rowKey="id"
+                  rowKey="foodId"
                   loading={loading}
                   pagination={{
                     current: params.current,
                     pageSize: params.pageSize,
                     total,
-                    onChange: (page, pageSize) => setParams({ ...params, current: page, pageSize }),
+                    onChange: (page, pageSize) => setParams(prev => ({ ...prev, current: page, pageSize })),
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `共 ${total} 条`
@@ -514,11 +526,11 @@ function Dashboard() {
               placeholder="请选择菜品分类"
               style={{ width: '100%' }}
             >
-              <Select.Option value={1}>主食</Select.Option>
-              <Select.Option value={2}>小吃</Select.Option>
-              <Select.Option value={3}>饮品</Select.Option>
-              <Select.Option value={4}>甜品</Select.Option>
-              <Select.Option value={5}>其他</Select.Option>
+              {categoryList.map(category => (
+                <Select.Option key={category.categoryId} value={category.categoryId}>
+                  {category.name}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item label="菜品描述">

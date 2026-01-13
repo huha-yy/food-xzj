@@ -206,6 +206,24 @@ function ReviewList() {
                 <div className="review-content-section">
                   <p className="review-text">{review.content}</p>
 
+                  {/* 评价标签 */}
+                  {review.tags && review.tags.length > 0 && (
+                    <div className="review-tags" style={{ marginTop: '12px', marginBottom: '12px' }}>
+                      {review.tags.map(tag => (
+                        <Tag
+                          key={tag.tagId}
+                          color={
+                            tag.type === 'POSITIVE' ? 'green' :
+                            tag.type === 'NEGATIVE' ? 'red' : 'blue'
+                          }
+                          style={{ marginRight: '8px', marginBottom: '8px' }}
+                        >
+                          {tag.name}
+                        </Tag>
+                      ))}
+                    </div>
+                  )}
+
                   {/* 评价图片 */}
                   {review.imageUrls && review.imageUrls.length > 0 && (
                     <div className="review-images">

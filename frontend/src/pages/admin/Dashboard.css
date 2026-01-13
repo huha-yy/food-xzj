@@ -84,8 +84,9 @@
   flex-wrap: wrap;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  background: white;
   border-radius: 12px;
+  border: 1px solid #f0f0f0;
 }
 
 .search-bar .ant-input-search {
@@ -124,10 +125,10 @@
 }
 
 .admin-dashboard .ant-table-thead > tr > th {
-  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  background: #fafafa;
   font-weight: 600;
   color: #333;
-  border-bottom: none;
+  border-bottom: 2px solid #f0f0f0;
   padding: 16px;
 }
 
@@ -137,7 +138,7 @@
 }
 
 .admin-dashboard .ant-table-tbody > tr:hover > td {
-  background: #e6f4ff;
+  background: #fafafa;
 }
 
 .admin-dashboard .ant-table-tbody > tr:last-child > td {
@@ -146,8 +147,8 @@
 
 /* 卡片标题样式 */
 .admin-dashboard .ant-card-head {
-  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
-  border-bottom: none;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
   padding: 16px 24px;
 }
 
@@ -203,8 +204,8 @@
 }
 
 .admin-dashboard .ant-modal-header {
-  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
-  border-bottom: none;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
   padding: 20px 24px;
 }
 

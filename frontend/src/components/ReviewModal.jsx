@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Modal, Form, Input, Rate, Upload, Button, message, Space } from 'antd'
+import { useState, useEffect } from 'react'
+import { Modal, Form, Input, Rate, Upload, Button, message, Space, Checkbox, Tag } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import { createReview } from '@/api/review'
+import { createReview, getAllReviewTags } from '@/api/review'
 import { uploadImage } from '@/api/upload'
 
 const { TextArea } = Input
@@ -11,6 +11,23 @@ function ReviewModal({ visible, foodId, foodName, onCancel, onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [fileList, setFileList] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [tags, setTags] = useState([])
+  const [selectedTags, setSelectedTags] = useState([])
+
+  useEffect(() => {
+    if (visible) {
+      fetchTags()
+    }
+  }, [visible])
+
+  const fetchTags = async () => {
+    try {
+      const data = await getAllReviewTags()
+      setTags(data || [])
+    } catch (error) {
+      console.error('获取标签失败:', error)
+    }
+  }
 
   const handleOk = async () => {
     try {
@@ -23,8 +40,15 @@ function ReviewModal({ visible, foodId, foodName, onCancel, onSuccess }) {
         foodId: foodId,
         content: values.content,
         rating: values.rating,
-        imageUrls: fileList.map(file => file.url).filter(url => url) // 使用imageUrls字段
+        // 从 file.response 中提取图片 URL
+        imageUrls: fileList
+          .map(file => file.response?.url || file.response?.imageUrl || file.url)
+          .filter(url => url),
+        tagIds: selectedTags // 添加标签ID
       }
+
+      console.log('提交评价数据:', reviewData)
+      console.log('fileList:', fileList)
 
       // 发表评价
       await createReview(reviewData)
@@ -32,6 +56,7 @@ function ReviewModal({ visible, foodId, foodName, onCancel, onSuccess }) {
       message.success('评价发表成功')
       form.resetFields()
       setFileList([])
+      setSelectedTags([])
       onSuccess && onSuccess()
     } catch (error) {
       console.error('发表评价失败:', error)
@@ -44,21 +69,26 @@ function ReviewModal({ visible, foodId, foodName, onCancel, onSuccess }) {
   const handleCancel = () => {
     form.resetFields()
     setFileList([])
+    setSelectedTags([])
     onCancel && onCancel()
+  }
+
+  const handleTagToggle = (tagId) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tagId)) {
+        return prev.filter(id => id !== tagId)
+      } else {
+        return [...prev, tagId]
+      }
+    })
   }
 
   // 自定义上传
   const handleUpload = async ({ file, onSuccess, onError }) => {
     try {
       const data = await uploadImage(file)
-      const url = data.url
-
-      // 将URL添加到file对象中
-      onSuccess({
-        ...file,
-        status: 'done',
-        url: url
-      })
+      // 正确调用 onSuccess，第一个参数是响应数据，第二个参数是 file 对象
+      onSuccess(data, file)
     } catch (error) {
       console.error('上传失败:', error)
       message.error('图片上传失败')
@@ -127,6 +157,31 @@ function ReviewModal({ visible, foodId, foodName, onCancel, onSuccess }) {
             showCount
             maxLength={500}
           />
+        </Form.Item>
+
+        <Form.Item
+          label="评价标签"
+          name="tags"
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {tags.map(tag => (
+              <Tag
+                key={tag.tagId}
+                color={selectedTags.includes(tag.tagId) ? (
+                  tag.type === 'POSITIVE' ? 'green' :
+                  tag.type === 'NEGATIVE' ? 'red' : 'blue'
+                ) : 'default'}
+                style={{
+                  cursor: 'pointer',
+                  padding: '4px 12px',
+                  fontSize: '14px'
+                }}
+                onClick={() => handleTagToggle(tag.tagId)}
+              >
+                {tag.name}
+              </Tag>
+            ))}
+          </div>
         </Form.Item>
 
         <Form.Item

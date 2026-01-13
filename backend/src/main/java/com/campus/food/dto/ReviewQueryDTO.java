@@ -29,5 +29,20 @@ public class ReviewQueryDTO extends PageQueryDTO {
      * 审核状态
      */
     private String auditStatus;
+
+    /**
+     * 评分筛选（1-5星）
+     */
+    private Integer rating;
+
+    /**
+     * 排序字段（time-时间, hot-热度, rating-评分）
+     */
+    private String sortBy;
+
+    /**
+     * 排序方向（asc-升序, desc-降序）
+     */
+    private String sortOrder;
 }
 

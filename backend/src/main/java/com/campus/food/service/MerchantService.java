@@ -27,6 +27,11 @@ public interface MerchantService {
     MerchantVO getMerchantInfo(Long merchantId);
 
     /**
+     * 通过用户ID查询商家信息
+     */
+    MerchantVO getMerchantByUserId(Long userId);
+
+    /**
      * 商家列表查询
      */
     IPage<MerchantVO> getMerchantList(MerchantQueryDTO merchantQueryDTO);

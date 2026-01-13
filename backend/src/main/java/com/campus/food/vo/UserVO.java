@@ -63,5 +63,20 @@ public class UserVO {
      * 更新时间
      */
     private String updateTime;
+
+    /**
+     * 收藏数量
+     */
+    private Integer collectionsCount;
+
+    /**
+     * 评价数量
+     */
+    private Integer reviewsCount;
+
+    /**
+     * 获得点赞数
+     */
+    private Integer likesCount;
 }
 

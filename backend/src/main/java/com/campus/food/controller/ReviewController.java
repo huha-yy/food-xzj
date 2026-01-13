@@ -118,5 +118,14 @@ public class ReviewController {
         ReviewStatisticsVO statistics = reviewService.getReviewStatistics();
         return Result.success(statistics);
     }
+
+    @GetMapping("/rating-distribution")
+    @Operation(summary = "获取评分分布统计")
+    public Result<com.campus.food.vo.RatingDistributionVO> getRatingDistribution(
+            @RequestParam(required = false) Long foodId
+    ) {
+        com.campus.food.vo.RatingDistributionVO distribution = reviewService.getRatingDistribution(foodId);
+        return Result.success(distribution);
+    }
 }
 

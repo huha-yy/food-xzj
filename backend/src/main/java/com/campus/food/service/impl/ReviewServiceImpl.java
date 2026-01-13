@@ -36,6 +36,8 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
     private final UserProfileMapper userProfileMapper;
     private final FoodMapper foodMapper;
     private final MerchantMapper merchantMapper;
+    private final com.campus.food.service.ReviewReplyService reviewReplyService;
+    private final com.campus.food.service.ReviewTagService reviewTagService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -69,7 +71,12 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             }
         }
 
-        // 4. 返回评价ID
+        // 4. 保存评价标签
+        if (createReviewDTO.getTagIds() != null && !createReviewDTO.getTagIds().isEmpty()) {
+            reviewTagService.addTagsToReview(review.getId(), createReviewDTO.getTagIds());
+        }
+
+        // 5. 返回评价ID
         return review.getId();
     }
 
@@ -144,7 +151,13 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             }
         }
 
-        // 7. 构建返回对象
+        // 7. 查询商家回复
+        com.campus.food.vo.ReviewReplyVO reply = reviewReplyService.getReplyByReviewId(reviewId);
+
+        // 8. 查询评价标签
+        java.util.List<com.campus.food.vo.ReviewTagVO> tags = reviewTagService.getTagsByReviewId(reviewId);
+
+        // 9. 构建返回对象
         ReviewVO reviewVO = ReviewVO.builder()
                 .reviewId(review.getId())
                 .userId(review.getUserId())
@@ -163,6 +176,8 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
                 .isLiked(isLiked)
                 .isDisliked(isDisliked)
                 .createTime(review.getCreateTime().toString())
+                .reply(reply)
+                .tags(tags)
                 .build();
 
         return reviewVO;
@@ -200,8 +215,36 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             wrapper.eq(Review::getAuditStatus, "APPROVED");
         }
 
-        // 7. 排序：按创建时间倒序
-        wrapper.orderByDesc(Review::getCreateTime);
+        // 7. 按评分筛选
+        if (reviewQueryDTO.getRating() != null) {
+            wrapper.eq(Review::getRating, reviewQueryDTO.getRating());
+        }
+
+        // 8. 排序
+        String sortBy = reviewQueryDTO.getSortBy();
+        String sortOrder = reviewQueryDTO.getSortOrder();
+        if ("hot".equals(sortBy)) {
+            // 按热度排序（点赞数 - 踩数）
+            if ("asc".equals(sortOrder)) {
+                wrapper.orderByAsc(Review::getLikeCount);
+            } else {
+                wrapper.orderByDesc(Review::getLikeCount);
+            }
+        } else if ("rating".equals(sortBy)) {
+            // 按评分排序
+            if ("asc".equals(sortOrder)) {
+                wrapper.orderByAsc(Review::getRating);
+            } else {
+                wrapper.orderByDesc(Review::getRating);
+            }
+        } else {
+            // 默认按时间排序
+            if ("asc".equals(sortOrder)) {
+                wrapper.orderByAsc(Review::getCreateTime);
+            } else {
+                wrapper.orderByDesc(Review::getCreateTime);
+            }
+        }
 
         // 8. 查询
         IPage<Review> resultPage = reviewMapper.selectPage(page, wrapper);
@@ -280,6 +323,12 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
                     .map(ReviewImage::getImageUrl)
                     .collect(Collectors.toList());
 
+            // 查询商家回复
+            com.campus.food.vo.ReviewReplyVO reply = reviewReplyService.getReplyByReviewId(review.getId());
+
+            // 查询评价标签
+            java.util.List<com.campus.food.vo.ReviewTagVO> tags = reviewTagService.getTagsByReviewId(review.getId());
+
             return ReviewVO.builder()
                     .reviewId(review.getId())
                     .userId(review.getUserId())
@@ -298,6 +347,8 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
                     .isLiked(likeMap.getOrDefault(review.getId(), false))
                     .isDisliked(dislikeMap.getOrDefault(review.getId(), false))
                     .createTime(review.getCreateTime().toString())
+                    .reply(reply)
+                    .tags(tags)
                     .build();
         });
     }
@@ -509,6 +560,44 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
                 .totalCount(totalCount)
                 .averageRating(Math.round(averageRating * 10.0) / 10.0)  // 保留一位小数
                 .todayCount(todayCount)
+                .build();
+    }
+
+    @Override
+    public com.campus.food.vo.RatingDistributionVO getRatingDistribution(Long foodId) {
+        // 构建查询条件
+        LambdaQueryWrapper<Review> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Review::getAuditStatus, "APPROVED");
+        if (foodId != null) {
+            wrapper.eq(Review::getFoodId, foodId);
+        }
+
+        // 查询所有评价
+        List<Review> reviews = reviewMapper.selectList(wrapper);
+
+        // 统计各星级数量
+        long fiveStarCount = reviews.stream().filter(r -> r.getRating() == 5).count();
+        long fourStarCount = reviews.stream().filter(r -> r.getRating() == 4).count();
+        long threeStarCount = reviews.stream().filter(r -> r.getRating() == 3).count();
+        long twoStarCount = reviews.stream().filter(r -> r.getRating() == 2).count();
+        long oneStarCount = reviews.stream().filter(r -> r.getRating() == 1).count();
+
+        // 计算平均评分
+        double averageRating = 0.0;
+        if (!reviews.isEmpty()) {
+            int sum = reviews.stream().mapToInt(Review::getRating).sum();
+            averageRating = (double) sum / reviews.size();
+        }
+
+        // 构建返回对象
+        return com.campus.food.vo.RatingDistributionVO.builder()
+                .fiveStarCount(fiveStarCount)
+                .fourStarCount(fourStarCount)
+                .threeStarCount(threeStarCount)
+                .twoStarCount(twoStarCount)
+                .oneStarCount(oneStarCount)
+                .totalCount((long) reviews.size())
+                .averageRating(Math.round(averageRating * 10.0) / 10.0)
                 .build();
     }
 }
