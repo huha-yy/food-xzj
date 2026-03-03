@@ -43,6 +43,28 @@ export function deleteReview(reviewId) {
 }
 
 /**
+ * 修改评价
+ */
+export function updateReview(data) {
+  return request({
+    url: '/reviews',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 获取我的评价列表
+ */
+export function getMyReviews(params) {
+  return request({
+    url: '/reviews/list',
+    method: 'get',
+    params
+  })
+}
+
+/**
  * 点赞评价
  */
 export function likeReview(reviewId) {

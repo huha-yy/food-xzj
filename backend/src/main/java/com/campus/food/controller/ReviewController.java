@@ -5,6 +5,7 @@ import com.campus.food.common.result.Result;
 import com.campus.food.dto.CreateReviewDTO;
 import com.campus.food.dto.ReviewAuditDTO;
 import com.campus.food.dto.ReviewQueryDTO;
+import com.campus.food.dto.UpdateReviewDTO;
 import com.campus.food.security.SecurityUser;
 import com.campus.food.service.ReviewService;
 import com.campus.food.vo.ReviewStatisticsVO;
@@ -38,6 +39,17 @@ public class ReviewController {
         return Result.success(reviewId);
     }
 
+    @PutMapping
+    @Operation(summary = "修改评价")
+    @PreAuthorize("hasRole('STUDENT')")
+    public Result<Void> updateReview(
+            @RequestBody UpdateReviewDTO updateReviewDTO,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        reviewService.updateReview(updateReviewDTO, securityUser.getUserId());
+        return Result.success();
+    }
+
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "删除评价")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
@@ -45,7 +57,7 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
-        reviewService.deleteReview(reviewId, securityUser.getUserId());
+        reviewService.deleteReview(reviewId, securityUser.getUserId(), securityUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
         return Result.success();
     }
 

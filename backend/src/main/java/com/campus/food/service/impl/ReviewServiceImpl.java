@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.campus.food.dto.CreateReviewDTO;
 import com.campus.food.dto.ReviewAuditDTO;
 import com.campus.food.dto.ReviewQueryDTO;
+import com.campus.food.dto.UpdateReviewDTO;
 import com.campus.food.entity.*;
 import com.campus.food.exception.BusinessException;
 import com.campus.food.mapper.*;
@@ -82,15 +83,64 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteReview(Long reviewId, Long userId) {
+    public void updateReview(UpdateReviewDTO updateReviewDTO, Long userId) {
+        // 1. 查询评价是否存在
+        Review review = reviewMapper.selectById(updateReviewDTO.getReviewId());
+        if (review == null || review.getIsDeleted() == 1) {
+            throw new BusinessException(4000, "评价不存在");
+        }
+
+        // 2. 只有作者本人可修改
+        if (!review.getUserId().equals(userId)) {
+            throw new BusinessException(4000, "只能修改自己的评价");
+        }
+
+        // 3. 只有待审核或驳回状态才允许修改
+        if ("APPROVED".equals(review.getAuditStatus())) {
+            throw new BusinessException(4000, "已通过审核的评价不能修改");
+        }
+
+        // 4. 更新评价内容，修改后重置为待审核
+        review.setRating(updateReviewDTO.getRating());
+        review.setContent(updateReviewDTO.getContent());
+        review.setAuditStatus("PENDING");
+        review.setAuditAdminId(null);
+        review.setAuditTime(null);
+        review.setAuditReason(null);
+        reviewMapper.updateById(review);
+
+        // 5. 更新图片：先删后插
+        LambdaQueryWrapper<ReviewImage> imageWrapper = new LambdaQueryWrapper<>();
+        imageWrapper.eq(ReviewImage::getReviewId, review.getId());
+        reviewImageMapper.delete(imageWrapper);
+        if (updateReviewDTO.getImageUrls() != null && !updateReviewDTO.getImageUrls().isEmpty()) {
+            for (int i = 0; i < updateReviewDTO.getImageUrls().size(); i++) {
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReviewId(review.getId());
+                reviewImage.setImageUrl(updateReviewDTO.getImageUrls().get(i));
+                reviewImage.setSort(i);
+                reviewImageMapper.insert(reviewImage);
+            }
+        }
+
+        // 6. 更新标签：先清除旧关联，再插入新关联
+        reviewTagService.removeTagsByReviewId(review.getId());
+        if (updateReviewDTO.getTagIds() != null && !updateReviewDTO.getTagIds().isEmpty()) {
+            reviewTagService.addTagsToReview(review.getId(), updateReviewDTO.getTagIds());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteReview(Long reviewId, Long userId, boolean isAdmin) {
         // 1. 查询评价是否存在
         Review review = reviewMapper.selectById(reviewId);
         if (review == null || review.getIsDeleted() == 1) {
             throw new BusinessException(4000, "评价不存在");
         }
 
-        // 2. 检查是否为评价作者
-        if (!review.getUserId().equals(userId)) {
+        // 2. 检查权限：管理员可删除任意评价，普通用户只能删除自己的评价
+        if (!isAdmin && !review.getUserId().equals(userId)) {
             throw new BusinessException(4000, "只能删除自己的评价");
         }
 
@@ -206,12 +256,12 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             wrapper.eq(Review::getUserId, reviewQueryDTO.getUserId());
         }
 
-        // 6. 按审核状态筛选（默认只查询已审核通过的评价）
+        // 6. 按审核状态筛选（查自己的评价时显示所有状态，否则默认只查已审核通过的评价）
         String auditStatus = reviewQueryDTO.getAuditStatus();
         if (auditStatus != null) {
             wrapper.eq(Review::getAuditStatus, auditStatus);
-        } else {
-            // 默认只显示已审核通过的评价
+        } else if (reviewQueryDTO.getUserId() == null) {
+            // 非个人中心查询，默认只显示已审核通过的评价
             wrapper.eq(Review::getAuditStatus, "APPROVED");
         }
 

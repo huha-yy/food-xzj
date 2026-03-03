@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.campus.food.dto.CreateReviewDTO;
 import com.campus.food.dto.ReviewAuditDTO;
 import com.campus.food.dto.ReviewQueryDTO;
+import com.campus.food.dto.UpdateReviewDTO;
 import com.campus.food.vo.ReviewStatisticsVO;
 import com.campus.food.vo.ReviewVO;
 
@@ -18,9 +19,14 @@ public interface ReviewService {
     Long createReview(CreateReviewDTO createReviewDTO, Long userId);
 
     /**
+     * 修改评价（仅作者本人，且仅限PENDING/REJECTED状态）
+     */
+    void updateReview(UpdateReviewDTO updateReviewDTO, Long userId);
+
+    /**
      * 删除评价
      */
-    void deleteReview(Long reviewId, Long userId);
+    void deleteReview(Long reviewId, Long userId, boolean isAdmin);
 
     /**
      * 查询评价详情

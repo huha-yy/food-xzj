@@ -23,4 +23,9 @@ public interface ReviewTagService {
      * 为评价添加标签
      */
     void addTagsToReview(Long reviewId, List<Long> tagIds);
+
+    /**
+     * 删除评价的所有标签关联
+     */
+    void removeTagsByReviewId(Long reviewId);
 }

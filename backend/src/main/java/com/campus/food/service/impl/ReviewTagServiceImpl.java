@@ -89,4 +89,12 @@ public class ReviewTagServiceImpl extends ServiceImpl<ReviewTagMapper, ReviewTag
             reviewTagRelationMapper.insert(relation);
         }
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeTagsByReviewId(Long reviewId) {
+        LambdaQueryWrapper<ReviewTagRelation> deleteWrapper = new LambdaQueryWrapper<>();
+        deleteWrapper.eq(ReviewTagRelation::getReviewId, reviewId);
+        reviewTagRelationMapper.delete(deleteWrapper);
+    }
 }

@@ -119,6 +119,16 @@ export function auditReview(data) {
 }
 
 /**
+ * 删除评价（管理员）
+ */
+export function deleteReview(reviewId) {
+  return request({
+    url: `/reviews/${reviewId}`,
+    method: 'delete'
+  })
+}
+
+/**
  * 获取公告列表
  */
 export function getAnnouncementList(params) {

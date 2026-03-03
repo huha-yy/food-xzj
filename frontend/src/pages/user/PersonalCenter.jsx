@@ -10,7 +10,12 @@ import {
   Tag,
   Descriptions,
   Modal,
-  Upload
+  Upload,
+  Rate,
+  Empty,
+  Spin,
+  Popconfirm,
+  Image
 } from 'antd'
 import {
   UserOutlined,
@@ -20,11 +25,13 @@ import {
   StarOutlined,
   UploadOutlined,
   CheckCircleFilled,
-  LikeOutlined
+  LikeOutlined,
+  DeleteOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, updateUserInfo, updatePassword } from '@/api/user'
 import { uploadImage } from '@/api/upload'
+import { getMyReviews, deleteReview, updateReview } from '@/api/review'
 import './PersonalCenter.css'
 
 // 装饰图标
@@ -42,9 +49,24 @@ function PersonalCenter() {
   const [avatarUrl, setAvatarUrl] = useState('')
   const [avatarUploading, setAvatarUploading] = useState(false)
 
+  // 我的评价
+  const [myReviews, setMyReviews] = useState([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
+  const [reviewsTotal, setReviewsTotal] = useState(0)
+  const [reviewsPage, setReviewsPage] = useState(1)
+  const [editReviewVisible, setEditReviewVisible] = useState(false)
+  const [editingReview, setEditingReview] = useState(null)
+  const [editReviewForm] = Form.useForm()
+
   useEffect(() => {
     fetchUserInfo()
   }, [])
+
+  useEffect(() => {
+    if (activeTab === 'reviews') {
+      fetchMyReviews(1)
+    }
+  }, [activeTab])
 
   const fetchUserInfo = async () => {
     try {
@@ -149,6 +171,67 @@ function PersonalCenter() {
     setPasswordModalVisible(true)
   }
 
+  const fetchMyReviews = async (page = 1) => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    if (!userInfo.userId) return
+    try {
+      setReviewsLoading(true)
+      const data = await getMyReviews({ userId: userInfo.userId, current: page, pageSize: 5 })
+      setMyReviews(data?.records || [])
+      setReviewsTotal(data?.total || 0)
+      setReviewsPage(page)
+    } catch (error) {
+      message.error('获取评价列表失败')
+    } finally {
+      setReviewsLoading(false)
+    }
+  }
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await deleteReview(reviewId)
+      message.success('撤回成功')
+      fetchMyReviews(reviewsPage)
+      fetchUserInfo()
+    } catch (error) {
+      message.error('撤回失败')
+    }
+  }
+
+  const openEditReview = (review) => {
+    setEditingReview(review)
+    editReviewForm.setFieldsValue({
+      rating: review.rating,
+      content: review.content
+    })
+    setEditReviewVisible(true)
+  }
+
+  const handleEditReview = async (values) => {
+    try {
+      await updateReview({
+        reviewId: editingReview.reviewId,
+        rating: values.rating,
+        content: values.content
+      })
+      message.success('修改成功，已重新进入待审核状态')
+      setEditReviewVisible(false)
+      editReviewForm.resetFields()
+      fetchMyReviews(reviewsPage)
+    } catch (error) {
+      message.error(error?.message || '修改失败')
+    }
+  }
+
+  const getAuditStatusTag = (status) => {
+    const map = {
+      PENDING: <Tag color="orange">待审核</Tag>,
+      APPROVED: <Tag color="green">已通过</Tag>,
+      REJECTED: <Tag color="red">已驳回</Tag>
+    }
+    return map[status] || <Tag>{status}</Tag>
+  }
+
   const getRoleText = (role) => {
     const roleMap = {
       'STUDENT': '学生',
@@ -229,7 +312,7 @@ function PersonalCenter() {
           <div className="stat-value">{userInfo?.collectionsCount || 0}</div>
           <div className="stat-label">我的收藏</div>
         </div>
-        <div className="stat-card" onClick={() => navigate('/reviews')}>
+        <div className="stat-card" onClick={() => setActiveTab('reviews')}>
           <div className="stat-icon reviews">
             <StarOutlined />
           </div>
@@ -304,39 +387,76 @@ function PersonalCenter() {
               )
             },
             {
-              key: 'collections',
-              label: '我的收藏',
-              children: (
-                <div className="empty-section">
-                  <div className="empty-icon">
-                    <HeartOutlined />
-                  </div>
-                  <p>查看和管理您的收藏</p>
-                  <Button
-                    type="primary"
-                    onClick={() => navigate('/collections')}
-                  >
-                    前往收藏列表
-                  </Button>
-                </div>
-              )
-            },
-            {
               key: 'reviews',
               label: '我的评价',
               children: (
-                <div className="empty-section">
-                  <div className="empty-icon">
-                    <StarOutlined />
-                  </div>
-                  <p>查看和管理您的评价</p>
-                  <Button
-                    type="primary"
-                    onClick={() => navigate('/reviews')}
-                  >
-                    前往评价列表
-                  </Button>
-                </div>
+                <Spin spinning={reviewsLoading}>
+                  {myReviews.length === 0 && !reviewsLoading ? (
+                    <Empty description="暂无评价记录" />
+                  ) : (
+                    <>
+                      {myReviews.map(review => (
+                        <Card
+                          key={review.reviewId}
+                          style={{ marginBottom: 12 }}
+                          size="small"
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontWeight: 500 }}>{review.foodName}</span>
+                                <span style={{ color: '#999', fontSize: 12 }}>{review.shopName}</span>
+                                {getAuditStatusTag(review.auditStatus)}
+                              </div>
+                              <Rate disabled value={review.rating} style={{ fontSize: 14 }} />
+                              <p style={{ margin: '6px 0', color: '#555' }}>{review.content}</p>
+                              {review.auditStatus === 'REJECTED' && review.auditReason && (
+                                <p style={{ color: '#f5222d', fontSize: 12 }}>驳回原因：{review.auditReason}</p>
+                              )}
+                              {review.imageUrls && review.imageUrls.length > 0 && (
+                                <Image.PreviewGroup>
+                                  {review.imageUrls.map((url, idx) => (
+                                    <Image key={idx} src={url} width={60} height={60} style={{ objectFit: 'cover', marginRight: 6, borderRadius: 4 }} />
+                                  ))}
+                                </Image.PreviewGroup>
+                              )}
+                              <div style={{ color: '#999', fontSize: 12, marginTop: 6 }}>{review.createTime}</div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginLeft: 12 }}>
+                              {review.auditStatus !== 'APPROVED' && (
+                                <Button
+                                  size="small"
+                                  icon={<EditOutlined />}
+                                  onClick={() => openEditReview(review)}
+                                >
+                                  修改
+                                </Button>
+                              )}
+                              <Popconfirm
+                                title="确定要撤回该评价吗？"
+                                onConfirm={() => handleDeleteReview(review.reviewId)}
+                                okText="确定"
+                                cancelText="取消"
+                              >
+                                <Button size="small" danger icon={<DeleteOutlined />}>
+                                  撤回
+                                </Button>
+                              </Popconfirm>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+                        <span style={{ color: '#999', fontSize: 13 }}>共 {reviewsTotal} 条评价</span>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <Button size="small" disabled={reviewsPage <= 1} onClick={() => fetchMyReviews(reviewsPage - 1)}>上一页</Button>
+                          <span style={{ lineHeight: '24px', fontSize: 13 }}>第 {reviewsPage} 页</span>
+                          <Button size="small" disabled={reviewsPage * 5 >= reviewsTotal} onClick={() => fetchMyReviews(reviewsPage + 1)}>下一页</Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </Spin>
               )
             }
           ]}
@@ -416,6 +536,29 @@ function PersonalCenter() {
               <Button type="primary" htmlType="submit">
                 保存
               </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 修改评价弹窗 */}
+      <Modal
+        title="修改评价"
+        open={editReviewVisible}
+        onCancel={() => { setEditReviewVisible(false); editReviewForm.resetFields() }}
+        footer={null}
+      >
+        <Form form={editReviewForm} layout="vertical" onFinish={handleEditReview}>
+          <Form.Item name="rating" label="评分" rules={[{ required: true, message: '请选择评分' }]}>
+            <Rate />
+          </Form.Item>
+          <Form.Item name="content" label="评价内容" rules={[{ required: true, message: '请输入评价内容' }, { max: 500, message: '评价内容不能超过500字' }]}>
+            <Input.TextArea rows={4} placeholder="请输入评价内容" maxLength={500} showCount />
+          </Form.Item>
+          <Form.Item>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end' }}>
+              <Button onClick={() => { setEditReviewVisible(false); editReviewForm.resetFields() }}>取消</Button>
+              <Button type="primary" htmlType="submit">保存</Button>
             </div>
           </Form.Item>
         </Form>

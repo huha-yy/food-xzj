@@ -42,6 +42,7 @@ import {
   getReviewList,
   getReviewDetail,
   auditReview,
+  deleteReview,
   getAnnouncementList,
   getAnnouncementDetail,
   createAnnouncement,
@@ -308,6 +309,16 @@ function Dashboard() {
       fetchReviewList()
     } catch (error) {
       message.error('审核失败')
+    }
+  }
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await deleteReview(reviewId)
+      message.success('删除成功')
+      fetchReviewList()
+    } catch (error) {
+      message.error('删除失败')
     }
   }
 
@@ -712,6 +723,16 @@ function Dashboard() {
               审核
             </Button>
           )}
+          <Popconfirm
+            title="确定要删除该评价吗？"
+            onConfirm={() => handleDeleteReview(record.reviewId)}
+            okText="确定"
+            cancelText="取消"
+          >
+            <Button type="link" danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       )
     }
