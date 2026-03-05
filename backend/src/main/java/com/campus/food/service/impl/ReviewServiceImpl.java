@@ -256,12 +256,12 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             wrapper.eq(Review::getUserId, reviewQueryDTO.getUserId());
         }
 
-        // 6. 按审核状态筛选（查自己的评价时显示所有状态，否则默认只查已审核通过的评价）
+        // 6. 按审核状态筛选（空字符串表示不过滤，null且非个人中心查询时默认只查已审核通过的评价）
         String auditStatus = reviewQueryDTO.getAuditStatus();
-        if (auditStatus != null) {
+        if (auditStatus != null && !auditStatus.isEmpty()) {
             wrapper.eq(Review::getAuditStatus, auditStatus);
-        } else if (reviewQueryDTO.getUserId() == null) {
-            // 非个人中心查询，默认只显示已审核通过的评价
+        } else if (auditStatus == null && reviewQueryDTO.getUserId() == null) {
+            // 非个人中心查询且未指定状态，默认只显示已审核通过的评价
             wrapper.eq(Review::getAuditStatus, "APPROVED");
         }
 

@@ -25,7 +25,7 @@ public interface ActivityService {
     /**
      * 删除活动
      */
-    void deleteActivity(Long activityId, Long userId);
+    void deleteActivity(Long activityId, Long userId, boolean isAdmin);
 
     /**
      * 查询活动详情

@@ -85,3 +85,48 @@ export function updateMerchantInfo(merchantId, data) {
   })
 }
 
+// ========== 活动管理 ==========
+
+/**
+ * 获取商家的活动列表
+ */
+export function getMerchantActivityList(params) {
+  return request({
+    url: '/activity/list',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 创建活动
+ */
+export function createActivity(data) {
+  return request({
+    url: '/activity',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 修改活动
+ */
+export function updateActivity(data) {
+  return request({
+    url: '/activity',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 删除活动
+ */
+export function deleteActivity(id) {
+  return request({
+    url: `/activity/${id}`,
+    method: 'delete'
+  })
+}
+

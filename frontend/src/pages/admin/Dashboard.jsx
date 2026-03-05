@@ -51,7 +51,8 @@ import {
   publishAnnouncement,
   getActivityList,
   getActivityDetail,
-  auditActivity
+  auditActivity,
+  deleteActivity
 } from '@/api/admin'
 import './Dashboard.css'
 
@@ -103,7 +104,7 @@ function Dashboard() {
   const [reviewParams, setReviewParams] = useState({
     current: 1,
     pageSize: 10,
-    auditStatus: undefined
+    auditStatus: ''
   })
   const [auditReviewVisible, setAuditReviewVisible] = useState(false)
   const [auditReviewForm, setAuditReviewForm] = useState({})
@@ -447,6 +448,16 @@ function Dashboard() {
       fetchActivityList()
     } catch (error) {
       message.error('审核失败')
+    }
+  }
+
+  const handleDeleteActivity = async (id) => {
+    try {
+      await deleteActivity(id)
+      message.success('删除成功')
+      fetchActivityList()
+    } catch (error) {
+      message.error('删除失败')
     }
   }
 
@@ -882,6 +893,16 @@ function Dashboard() {
               审核
             </Button>
           )}
+          <Popconfirm
+            title="确定要删除该活动吗？"
+            onConfirm={() => handleDeleteActivity(record.id)}
+            okText="确定"
+            cancelText="取消"
+          >
+            <Button type="link" danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       )
     }
@@ -1055,8 +1076,8 @@ function Dashboard() {
                     placeholder="筛选审核状态"
                     allowClear
                     style={{ width: 150 }}
-                    onChange={(value) => setReviewParams({ ...reviewParams, auditStatus: value, current: 1 })}
-                    value={reviewParams.auditStatus}
+                    onChange={(value) => setReviewParams({ ...reviewParams, auditStatus: value || '', current: 1 })}
+                    value={reviewParams.auditStatus || undefined}
                   >
                     <Select.Option value="PENDING">待审核</Select.Option>
                     <Select.Option value="APPROVED">已通过</Select.Option>

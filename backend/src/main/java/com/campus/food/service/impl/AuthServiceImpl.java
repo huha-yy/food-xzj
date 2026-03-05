@@ -5,9 +5,11 @@ import com.campus.food.dto.LoginDTO;
 import com.campus.food.dto.RegisterDTO;
 import com.campus.food.entity.User;
 import com.campus.food.entity.UserProfile;
+import com.campus.food.entity.Merchant;
 import com.campus.food.exception.BusinessException;
 import com.campus.food.mapper.UserMapper;
 import com.campus.food.mapper.UserProfileMapper;
+import com.campus.food.mapper.MerchantMapper;
 import com.campus.food.security.SecurityUser;
 import com.campus.food.service.AuthService;
 import com.campus.food.utils.JwtUtil;
@@ -29,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserMapper userMapper;
     private final UserProfileMapper userProfileMapper;
+    private final MerchantMapper merchantMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -121,8 +124,21 @@ public class AuthServiceImpl implements AuthService {
         );
         String nickname = profile != null ? profile.getNickname() : user.getUsername();
 
-        // 6. 返回登录信息
-        return new LoginVO(token, user.getId(), user.getUsername(), user.getRole(), nickname);
+        // 6. 商家角色时查询 merchantId
+        Long merchantId = null;
+        if ("MERCHANT".equals(user.getRole())) {
+            Merchant merchant = merchantMapper.selectOne(
+                    new LambdaQueryWrapper<Merchant>()
+                            .eq(Merchant::getUserId, user.getId())
+                            .eq(Merchant::getIsDeleted, 0)
+            );
+            if (merchant != null) {
+                merchantId = merchant.getId();
+            }
+        }
+
+        // 7. 返回登录信息
+        return new LoginVO(token, user.getId(), user.getUsername(), user.getRole(), nickname, merchantId);
     }
 }
 

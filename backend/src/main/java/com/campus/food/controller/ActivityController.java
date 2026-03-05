@@ -46,11 +46,13 @@ public class ActivityController {
     }
 
     @Operation(summary = "删除活动")
-    @PreAuthorize("hasRole('MERCHANT')")
+    @PreAuthorize("hasAnyRole('MERCHANT', 'ADMIN')")
     @DeleteMapping("/{id}")
     public Result<Void> deleteActivity(@PathVariable Long id,
                                      @AuthenticationPrincipal SecurityUser securityUser) {
-        activityService.deleteActivity(id, securityUser.getUserId());
+        boolean isAdmin = securityUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        activityService.deleteActivity(id, securityUser.getUserId(), isAdmin);
         return Result.success();
     }
 

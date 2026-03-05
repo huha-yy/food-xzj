@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, Input, Select, Tag, Rate, Button, Empty, Spin, Avatar, Image, Statistic, Row, Col, Skeleton } from 'antd'
-import { SearchOutlined, ShopOutlined, StarOutlined, LikeOutlined, DislikeOutlined, CommentOutlined, FireOutlined, CoffeeOutlined } from '@ant-design/icons'
+import { SearchOutlined, ShopOutlined, StarOutlined, LikeOutlined, DislikeOutlined, CommentOutlined, FireOutlined, CoffeeOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getReviewList, likeReview, dislikeReview, cancelInteraction, getReviewStatistics } from '@/api/review'
 import './ReviewList.css'
@@ -13,6 +13,15 @@ function ReviewList() {
   const [reviewList, setReviewList] = useState([])
   const [total, setTotal] = useState(0)
   const [statistics, setStatistics] = useState(null)
+  const [expandedReplies, setExpandedReplies] = useState(new Set())
+
+  const toggleReply = (reviewId) => {
+    setExpandedReplies(prev => {
+      const next = new Set(prev)
+      next.has(reviewId) ? next.delete(reviewId) : next.add(reviewId)
+      return next
+    })
+  }
   const [params, setParams] = useState({
     current: 1,
     pageSize: 10,
@@ -238,6 +247,37 @@ function ReviewList() {
                           </div>
                         ))}
                       </Image.PreviewGroup>
+                    </div>
+                  )}
+
+                  {/* 商家回复 */}
+                  {review.reply && (
+                    <div style={{ marginTop: '12px' }}>
+                      <Button
+                        type="link"
+                        size="small"
+                        icon={expandedReplies.has(review.reviewId) ? <UpOutlined /> : <DownOutlined />}
+                        onClick={() => toggleReply(review.reviewId)}
+                        style={{ padding: 0, color: '#1677ff' }}
+                      >
+                        {expandedReplies.has(review.reviewId) ? '收起商家回复' : '查看商家回复'}
+                      </Button>
+                      {expandedReplies.has(review.reviewId) && (
+                        <div style={{
+                          marginTop: '8px',
+                          padding: '12px',
+                          backgroundColor: '#f5f5f5',
+                          borderRadius: '4px'
+                        }}>
+                          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1677ff' }}>
+                            <ShopOutlined /> {review.reply.shopName} 回复：
+                          </div>
+                          <div>{review.reply.content}</div>
+                          <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                            {review.reply.createTime}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

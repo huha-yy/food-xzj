@@ -28,7 +28,8 @@ function Login() {
         userId: response.userId,
         username: response.username,
         nickname: response.nickname,
-        role: response.role
+        role: response.role,
+        merchantId: response.merchantId || null
       }))
 
       message.success('登录成功')

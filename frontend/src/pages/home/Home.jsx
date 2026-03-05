@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Card, Row, Col, List, Tag, Rate, Button, Empty, Spin, Input, Tabs, Skeleton } from 'antd'
-import { SearchOutlined, FireOutlined, ShopOutlined, StarOutlined, BellOutlined, AppstoreOutlined, CoffeeOutlined, SmileOutlined } from '@ant-design/icons'
+import { Card, Row, Col, List, Tag, Rate, Button, Empty, Spin, Input, Tabs, Skeleton, Segmented, Pagination } from 'antd'
+import { SearchOutlined, FireOutlined, ShopOutlined, StarOutlined, BellOutlined, AppstoreOutlined, CoffeeOutlined, SmileOutlined, GiftOutlined, CalendarOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getRecommendFoods, getHotFoods, getFoodList } from '@/api/food'
 import { getCategoryList } from '@/api/category'
 import { getAnnouncementList } from '@/api/announcement'
+import { getActivityList } from '@/api/activity'
 import './Home.css'
 
 const { Search } = Input
@@ -15,10 +16,19 @@ function Home() {
   const [hotFoods, setHotFoods] = useState([])
   const [categories, setCategories] = useState([])
   const [announcements, setAnnouncements] = useState([])
+  const [activities, setActivities] = useState([])
+  const [infoType, setInfoType] = useState('announcement')
   const [searchKeyword, setSearchKeyword] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [activeTab, setActiveTab] = useState('hot')
   const navigate = useNavigate()
+
+  // 公告和活动分页
+  const [announcementPage, setAnnouncementPage] = useState(1)
+  const [announcementTotal, setAnnouncementTotal] = useState(0)
+  const [activityPage, setActivityPage] = useState(1)
+  const [activityTotal, setActivityTotal] = useState(0)
+  const [infoLoading, setInfoLoading] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -36,21 +46,53 @@ function Home() {
     try {
       setLoading(true)
 
-      const [recommendData, hotData, categoryData, announcementData] = await Promise.all([
+      const [recommendData, hotData, categoryData, announcementData, activityData] = await Promise.all([
         getRecommendFoods({ limit: 6 }),
         getHotFoods({ limit: 6 }),
         getCategoryList(),
-        getAnnouncementList({ status: 'PUBLISHED', current: 1, pageSize: 5 })
+        getAnnouncementList({ status: 'PUBLISHED', current: 1, pageSize: 5 }),
+        getActivityList({ auditStatus: 'APPROVED', current: 1, pageSize: 5 })
       ])
 
       setRecommendFoods(Array.isArray(recommendData) ? recommendData : [])
       setHotFoods(Array.isArray(hotData) ? hotData : [])
       setCategories(Array.isArray(categoryData) ? categoryData : [])
       setAnnouncements(announcementData?.records || [])
+      setAnnouncementTotal(announcementData?.total || 0)
+      setActivities(activityData?.records || [])
+      setActivityTotal(activityData?.total || 0)
     } catch (error) {
       console.error('获取首页数据失败:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchAnnouncements = async (page = 1) => {
+    try {
+      setInfoLoading(true)
+      const data = await getAnnouncementList({ status: 'PUBLISHED', current: page, pageSize: 5 })
+      setAnnouncements(data?.records || [])
+      setAnnouncementTotal(data?.total || 0)
+      setAnnouncementPage(page)
+    } catch (error) {
+      console.error('获取公告失败:', error)
+    } finally {
+      setInfoLoading(false)
+    }
+  }
+
+  const fetchActivities = async (page = 1) => {
+    try {
+      setInfoLoading(true)
+      const data = await getActivityList({ auditStatus: 'APPROVED', current: page, pageSize: 5 })
+      setActivities(data?.records || [])
+      setActivityTotal(data?.total || 0)
+      setActivityPage(page)
+    } catch (error) {
+      console.error('获取活动失败:', error)
+    } finally {
+      setInfoLoading(false)
     }
   }
 
@@ -232,41 +274,102 @@ function Home() {
       </div>
 
       <div className="home-content">
-        {/* 公告栏 */}
-        {announcements.length > 0 && (
+        {/* 公告/活动栏 */}
+        {(announcements.length > 0 || activities.length > 0) && (
           <Card
             className="announcement-card"
             title={
-              <div className="card-title">
-                <BellOutlined />
-                <span>系统公告</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="card-title">
+                  {infoType === 'announcement' ? <BellOutlined /> : <GiftOutlined />}
+                  <span>{infoType === 'announcement' ? '系统公告' : '促销活动'}</span>
+                </div>
+                <Segmented
+                  size="small"
+                  value={infoType}
+                  onChange={(value) => setInfoType(value)}
+                  options={[
+                    { label: '公告', value: 'announcement' },
+                    { label: '活动', value: 'activity' }
+                  ]}
+                />
               </div>
             }
           >
-            <List
-              dataSource={announcements}
-              renderItem={(announcement) => (
-                <List.Item key={announcement.id} className="announcement-item">
-                  <div className="announcement-content">
-                    <div className="announcement-header">
-                      <span className="announcement-title">{announcement.title}</span>
-                      <span className="announcement-time">
-                        {announcement.publishTime
-                          ? new Date(announcement.publishTime).toLocaleString('zh-CN', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })
-                          : ''}
-                      </span>
+            <Spin spinning={infoLoading}>
+              {infoType === 'announcement' ? (
+                <>
+                  <List
+                    dataSource={announcements}
+                    renderItem={(announcement) => (
+                      <List.Item key={announcement.id} className="announcement-item">
+                        <div className="announcement-content">
+                          <div className="announcement-header">
+                            <span className="announcement-title">{announcement.title}</span>
+                            <span className="announcement-time">
+                              {announcement.publishTime
+                                ? new Date(announcement.publishTime).toLocaleString('zh-CN', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })
+                                : ''}
+                            </span>
+                          </div>
+                          <div className="announcement-text">{announcement.content}</div>
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+                  {announcementTotal > 5 && (
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                      <Pagination
+                        simple
+                        current={announcementPage}
+                        pageSize={5}
+                        total={announcementTotal}
+                        onChange={(page) => fetchAnnouncements(page)}
+                      />
                     </div>
-                    <div className="announcement-text">{announcement.content}</div>
-                  </div>
-                </List.Item>
+                  )}
+                </>
+              ) : (
+                <>
+                  <List
+                    dataSource={activities}
+                    renderItem={(activity) => (
+                      <List.Item key={activity.id} className="announcement-item" onClick={() => navigate(`/merchants/${activity.merchantId}`)} style={{ cursor: 'pointer' }}>
+                        <div className="announcement-content">
+                          <div className="announcement-header">
+                            <span className="announcement-title">{activity.title}</span>
+                            <Tag color="orange">{activity.merchantName}</Tag>
+                          </div>
+                          <div className="announcement-text">{activity.content}</div>
+                          <div style={{ fontSize: 12, color: '#999', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <CalendarOutlined />
+                            {new Date(activity.startTime).toLocaleDateString('zh-CN')} ~ {new Date(activity.endTime).toLocaleDateString('zh-CN')}
+                          </div>
+                        </div>
+                      </List.Item>
+                    )}
+                    locale={{ emptyText: '暂无活动' }}
+                  />
+                  {activityTotal > 5 && (
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                      <Pagination
+                        simple
+                        current={activityPage}
+                        pageSize={5}
+                        total={activityTotal}
+                        onChange={(page) => fetchActivities(page)}
+                      />
+                    </div>
+                  )}
+                </>
               )}
-            />
+            </Spin>
           </Card>
         )}
 

@@ -223,3 +223,13 @@ export function auditActivity(data) {
   })
 }
 
+/**
+ * 删除活动（管理员）
+ */
+export function deleteActivity(id) {
+  return request({
+    url: `/activity/${id}`,
+    method: 'delete'
+  })
+}
+

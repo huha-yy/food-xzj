@@ -15,7 +15,7 @@ import {
   MessageOutlined
 } from '@ant-design/icons'
 import { getFoodDetail } from '@/api/food'
-import { getReviewList, likeReview, dislikeReview, cancelInteraction, getRatingDistribution, createReviewReply } from '@/api/review'
+import { getReviewList, likeReview, dislikeReview, cancelInteraction, getRatingDistribution, createReviewReply, deleteReviewReply } from '@/api/review'
 import { createCollection, deleteCollection, checkCollection, getCollectionList } from '@/api/collection'
 import ReviewModal from '@/components/ReviewModal'
 import './FoodDetail.css'
@@ -39,6 +39,8 @@ function FoodDetail() {
   const [ratingFilter, setRatingFilter] = useState(null)
   const [replyingReviewId, setReplyingReviewId] = useState(null)
   const [replyContent, setReplyContent] = useState('')
+  const [editingReplyId, setEditingReplyId] = useState(null)
+  const [editReplyContent, setEditReplyContent] = useState('')
   const pageSize = 10
 
   // 获取用户信息
@@ -211,6 +213,23 @@ function FoodDetail() {
     } catch (error) {
       console.error('回复失败:', error)
       message.error(error.response?.data?.message || '回复失败')
+    }
+  }
+
+  const handleEditReply = async (replyId, reviewId) => {
+    if (!editReplyContent.trim()) {
+      message.error('请输入回复内容')
+      return
+    }
+    try {
+      await deleteReviewReply(replyId)
+      await createReviewReply({ reviewId, content: editReplyContent })
+      message.success('修改成功')
+      setEditingReplyId(null)
+      setEditReplyContent('')
+      fetchReviews(reviewPage)
+    } catch (error) {
+      message.error('修改失败')
     }
   }
 
@@ -517,13 +536,57 @@ function FoodDetail() {
                       backgroundColor: '#f5f5f5',
                       borderRadius: '4px'
                     }}>
-                      <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1677ff' }}>
-                        <ShopOutlined /> {review.reply.shopName} 回复：
-                      </div>
-                      <div>{review.reply.content}</div>
-                      <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-                        {review.reply.createTime}
-                      </div>
+                      {editingReplyId === review.reply.replyId ? (
+                        <>
+                          <TextArea
+                            rows={3}
+                            value={editReplyContent}
+                            onChange={(e) => setEditReplyContent(e.target.value)}
+                            maxLength={500}
+                            showCount
+                          />
+                          <div style={{ marginTop: '8px', textAlign: 'right' }}>
+                            <Button
+                              size="small"
+                              onClick={() => { setEditingReplyId(null); setEditReplyContent('') }}
+                              style={{ marginRight: '8px' }}
+                            >
+                              取消
+                            </Button>
+                            <Button
+                              type="primary"
+                              size="small"
+                              onClick={() => handleEditReply(review.reply.replyId, review.reviewId)}
+                            >
+                              保存
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1677ff' }}>
+                            <ShopOutlined /> {review.reply.shopName} 回复：
+                          </div>
+                          <div>{review.reply.content}</div>
+                          <div style={{ fontSize: '12px', color: '#999', marginTop: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>{review.reply.createTime}</span>
+                            {isMerchant && userInfo?.merchantId === food?.merchantId && (
+                              <Button
+                                type="link"
+                                size="small"
+                                icon={<EditOutlined />}
+                                style={{ padding: 0 }}
+                                onClick={() => {
+                                  setEditingReplyId(review.reply.replyId)
+                                  setEditReplyContent(review.reply.content)
+                                }}
+                              >
+                                修改
+                              </Button>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -560,7 +623,7 @@ function FoodDetail() {
                         取消
                       </Button>
                     )}
-                    {isMerchant && !review.reply && (
+                    {isMerchant && !review.reply && userInfo?.merchantId === food?.merchantId && (
                       <Button
                         type="text"
                         size="small"

@@ -17,7 +17,8 @@ import {
   Tabs,
   Upload,
   Image,
-  Popconfirm
+  Popconfirm,
+  DatePicker
 } from 'antd'
 import {
   PlusOutlined,
@@ -29,7 +30,8 @@ import {
   UploadOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  GiftOutlined
 } from '@ant-design/icons'
 import {
   getMerchantFoodList,
@@ -39,11 +41,17 @@ import {
   updateFoodStatus,
   getMerchantInfo,
   updateMerchantInfo,
-  getCurrentMerchant
+  getCurrentMerchant,
+  getMerchantActivityList,
+  createActivity,
+  updateActivity,
+  deleteActivity
 } from '@/api/merchantDashboard'
 import { uploadImage } from '@/api/upload'
 import { getCategoryList } from '@/api/category'
 import './Dashboard.css'
+
+const { RangePicker } = DatePicker
 
 const { TextArea } = Input
 
@@ -65,6 +73,15 @@ function Dashboard() {
   const [merchantFormVisible, setMerchantFormVisible] = useState(false)
   const [merchantForm, setMerchantForm] = useState({})
   const [coverImageUploading, setCoverImageUploading] = useState(false)
+
+  // 活动管理
+  const [activityList, setActivityList] = useState([])
+  const [activityTotal, setActivityTotal] = useState(0)
+  const [activityLoading, setActivityLoading] = useState(false)
+  const [activityParams, setActivityParams] = useState({ current: 1, pageSize: 10, auditStatus: undefined })
+  const [activityFormVisible, setActivityFormVisible] = useState(false)
+  const [activityForm, setActivityForm] = useState({})
+  const [editingActivity, setEditingActivity] = useState(null)
 
   // 分页参数
   const [params, setParams] = useState({
@@ -114,6 +131,13 @@ function Dashboard() {
     }
   }, [params, merchantInfo?.merchantId])
 
+  // 获取活动列表
+  useEffect(() => {
+    if (activeTab === 'activities' && merchantInfo?.merchantId) {
+      fetchActivityList()
+    }
+  }, [activityParams, activeTab, merchantInfo?.merchantId])
+
   const fetchFoodList = async () => {
     if (!merchantInfo?.merchantId) return
 
@@ -130,6 +154,75 @@ function Dashboard() {
       message.error('获取菜品列表失败')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchActivityList = async () => {
+    if (!merchantInfo?.merchantId) return
+    try {
+      setActivityLoading(true)
+      const response = await getMerchantActivityList({
+        ...activityParams,
+        merchantId: merchantInfo.merchantId
+      })
+      setActivityList(response.records || [])
+      setActivityTotal(response.total || 0)
+    } catch (error) {
+      message.error('获取活动列表失败')
+    } finally {
+      setActivityLoading(false)
+    }
+  }
+
+  const openActivityForm = (activity = null) => {
+    if (activity) {
+      setEditingActivity(activity)
+      setActivityForm({
+        id: activity.id,
+        title: activity.title,
+        content: activity.content,
+        timeRange: [activity.startTime, activity.endTime]
+      })
+    } else {
+      setEditingActivity(null)
+      setActivityForm({ title: '', content: '', timeRange: null })
+    }
+    setActivityFormVisible(true)
+  }
+
+  const handleActivitySubmit = async () => {
+    if (!activityForm.title || !activityForm.content || !activityForm.timeRange) {
+      message.error('请填写完整信息')
+      return
+    }
+    try {
+      const data = {
+        title: activityForm.title,
+        content: activityForm.content,
+        startTime: activityForm.timeRange[0],
+        endTime: activityForm.timeRange[1]
+      }
+      if (editingActivity) {
+        await updateActivity({ ...data, id: editingActivity.id })
+        message.success('修改活动成功')
+      } else {
+        await createActivity(data)
+        message.success('创建活动成功，等待审核')
+      }
+      setActivityFormVisible(false)
+      fetchActivityList()
+    } catch (error) {
+      message.error(editingActivity ? '修改活动失败' : '创建活动失败')
+    }
+  }
+
+  const handleDeleteActivity = async (id) => {
+    try {
+      await deleteActivity(id)
+      message.success('删除活动成功')
+      fetchActivityList()
+    } catch (error) {
+      message.error('删除活动失败')
     }
   }
 
@@ -351,6 +444,46 @@ function Dashboard() {
     }
   ]
 
+  // 活动表格列
+  const activityColumns = [
+    { title: '活动标题', dataIndex: 'title', key: 'title' },
+    { title: '活动内容', dataIndex: 'content', key: 'content', ellipsis: true },
+    {
+      title: '开始时间',
+      dataIndex: 'startTime',
+      key: 'startTime',
+      render: (time) => time ? new Date(time).toLocaleString('zh-CN') : '-'
+    },
+    {
+      title: '结束时间',
+      dataIndex: 'endTime',
+      key: 'endTime',
+      render: (time) => time ? new Date(time).toLocaleString('zh-CN') : '-'
+    },
+    {
+      title: '审核状态',
+      dataIndex: 'auditStatus',
+      key: 'auditStatus',
+      render: (status) => {
+        const map = { PENDING: { text: '待审核', color: 'orange' }, APPROVED: { text: '已通过', color: 'green' }, REJECTED: { text: '已驳回', color: 'red' } }
+        const s = map[status] || { text: status, color: 'default' }
+        return <Tag color={s.color}>{s.text}</Tag>
+      }
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="small">
+          <Button type="link" icon={<EditOutlined />} onClick={() => openActivityForm(record)} disabled={record.auditStatus === 'APPROVED'}>编辑</Button>
+          <Popconfirm title="确定要删除该活动吗？" onConfirm={() => handleDeleteActivity(record.id)} okText="确定" cancelText="取消">
+            <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      )
+    }
+  ]
+
   return (
     <div className="merchant-dashboard">
       <Tabs
@@ -481,6 +614,53 @@ function Dashboard() {
                     onChange: (page, pageSize) => setParams(prev => ({ ...prev, current: page, pageSize })),
                     showSizeChanger: true,
                     showQuickJumper: true,
+                    showTotal: (total) => `共 ${total} 条`
+                  }}
+                />
+              </Card>
+            )
+          },
+          {
+            key: 'activities',
+            label: (
+              <span>
+                <GiftOutlined />
+                活动管理
+              </span>
+            ),
+            children: (
+              <Card
+                title="活动列表"
+                extra={
+                  <Button type="primary" icon={<PlusOutlined />} onClick={() => openActivityForm()}>
+                    发布活动
+                  </Button>
+                }
+              >
+                <div className="search-bar">
+                  <Select
+                    placeholder="筛选审核状态"
+                    allowClear
+                    style={{ width: 150 }}
+                    onChange={(value) => setActivityParams(prev => ({ ...prev, auditStatus: value, current: 1 }))}
+                    value={activityParams.auditStatus}
+                  >
+                    <Select.Option value="PENDING">待审核</Select.Option>
+                    <Select.Option value="APPROVED">已通过</Select.Option>
+                    <Select.Option value="REJECTED">已驳回</Select.Option>
+                  </Select>
+                </div>
+                <Table
+                  columns={activityColumns}
+                  dataSource={activityList}
+                  rowKey="id"
+                  loading={activityLoading}
+                  pagination={{
+                    current: activityParams.current,
+                    pageSize: activityParams.pageSize,
+                    total: activityTotal,
+                    onChange: (page, pageSize) => setActivityParams(prev => ({ ...prev, current: page, pageSize })),
+                    showSizeChanger: true,
                     showTotal: (total) => `共 ${total} 条`
                   }}
                 />
@@ -631,6 +811,46 @@ function Dashboard() {
                 </div>
               )}
             </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 活动表单弹窗 */}
+      <Modal
+        title={editingActivity ? '编辑活动' : '发布活动'}
+        open={activityFormVisible}
+        onOk={handleActivitySubmit}
+        onCancel={() => setActivityFormVisible(false)}
+        width={600}
+        okText="确定"
+        cancelText="取消"
+      >
+        <Form layout="vertical">
+          <Form.Item label="活动标题" required>
+            <Input
+              value={activityForm.title}
+              onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })}
+              placeholder="请输入活动标题"
+              maxLength={100}
+            />
+          </Form.Item>
+          <Form.Item label="活动内容" required>
+            <TextArea
+              value={activityForm.content}
+              onChange={(e) => setActivityForm({ ...activityForm, content: e.target.value })}
+              placeholder="请输入活动内容"
+              rows={4}
+              maxLength={500}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item label="活动时间" required>
+            <RangePicker
+              showTime
+              value={activityForm.timeRange}
+              onChange={(dates) => setActivityForm({ ...activityForm, timeRange: dates })}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -10,29 +10,15 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginVO {
 
-    /**
-     * Token
-     */
     private String token;
-
-    /**
-     * 用户ID
-     */
     private Long userId;
-
-    /**
-     * 用户名
-     */
     private String username;
-
-    /**
-     * 角色
-     */
     private String role;
+    private String nickname;
 
     /**
-     * 昵称
+     * 商家ID（仅商家角色时有值）
      */
-    private String nickname;
+    private Long merchantId;
 }
 

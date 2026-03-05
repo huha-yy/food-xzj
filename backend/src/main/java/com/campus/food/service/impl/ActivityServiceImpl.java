@@ -96,25 +96,26 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteActivity(Long activityId, Long userId) {
+    public void deleteActivity(Long activityId, Long userId, boolean isAdmin) {
         // 1. 查询活动是否存在
         Activity activity = activityMapper.selectById(activityId);
         if (activity == null || activity.getIsDeleted() == 1) {
             throw new BusinessException(4000, "活动不存在");
         }
 
-        // 2. 查询商家信息
-        LambdaQueryWrapper<Merchant> merchantWrapper = new LambdaQueryWrapper<>();
-        merchantWrapper.eq(Merchant::getUserId, userId);
-        Merchant merchant = merchantMapper.selectOne(merchantWrapper);
+        // 2. 权限校验：管理员可删除任意活动，商家只能删除自己的活动
+        if (!isAdmin) {
+            LambdaQueryWrapper<Merchant> merchantWrapper = new LambdaQueryWrapper<>();
+            merchantWrapper.eq(Merchant::getUserId, userId);
+            Merchant merchant = merchantMapper.selectOne(merchantWrapper);
 
-        if (merchant == null) {
-            throw new BusinessException(4000, "商家不存在");
-        }
+            if (merchant == null) {
+                throw new BusinessException(4000, "商家不存在");
+            }
 
-        // 3. 检查是否为该商家的活动
-        if (!activity.getMerchantId().equals(merchant.getId())) {
-            throw new BusinessException(4000, "只能删除自己的活动");
+            if (!activity.getMerchantId().equals(merchant.getId())) {
+                throw new BusinessException(4000, "只能删除自己的活动");
+            }
         }
 
         // 4. 逻辑删除活动
@@ -212,18 +213,23 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
                         .collect(Collectors.toMap(User::getId, User::getUsername));
 
         // 6. 批量查询活动图片
-        List<ActivityImage> allImages = activityImageMapper.selectList(
-                new LambdaQueryWrapper<ActivityImage>()
-                        .in(ActivityImage::getActivityId,
-                                resultPage.getRecords().stream()
-                                        .map(Activity::getId)
-                                        .collect(Collectors.toList()))
-        );
-        Map<Long, List<String>> imageMap = allImages.stream()
-                .collect(Collectors.groupingBy(
-                        ActivityImage::getActivityId,
-                        Collectors.mapping(ActivityImage::getImageUrl, Collectors.toList())
-                ));
+        List<Long> activityIds = resultPage.getRecords().stream()
+                .map(Activity::getId)
+                .collect(Collectors.toList());
+        Map<Long, List<String>> imageMap;
+        if (activityIds.isEmpty()) {
+            imageMap = Map.of();
+        } else {
+            List<ActivityImage> allImages = activityImageMapper.selectList(
+                    new LambdaQueryWrapper<ActivityImage>()
+                            .in(ActivityImage::getActivityId, activityIds)
+            );
+            imageMap = allImages.stream()
+                    .collect(Collectors.groupingBy(
+                            ActivityImage::getActivityId,
+                            Collectors.mapping(ActivityImage::getImageUrl, Collectors.toList())
+                    ));
+        }
 
         // 7. 转换为VO
         return resultPage.convert(activity -> {

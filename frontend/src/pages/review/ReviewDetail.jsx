@@ -21,7 +21,9 @@ import {
   StarOutlined,
   LikeOutlined,
   DislikeOutlined,
-  ArrowLeftOutlined
+  ArrowLeftOutlined,
+  DownOutlined,
+  UpOutlined
 } from '@ant-design/icons'
 import { getReviewDetail, likeReview, dislikeReview, cancelInteraction } from '@/api/review'
 import './ReviewDetail.css'
@@ -31,6 +33,7 @@ const ReviewDetail = () => {
   const navigate = useNavigate()
   const [review, setReview] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [replyExpanded, setReplyExpanded] = useState(false)
 
   // 获取评价详情
   useEffect(() => {
@@ -192,6 +195,37 @@ const ReviewDetail = () => {
         )}
 
         <Divider />
+
+        {/* 商家回复 */}
+        {review.reply && (
+          <div style={{ marginBottom: '16px' }}>
+            <Button
+              type="link"
+              size="small"
+              icon={replyExpanded ? <UpOutlined /> : <DownOutlined />}
+              onClick={() => setReplyExpanded(!replyExpanded)}
+              style={{ padding: 0, color: '#1677ff' }}
+            >
+              {replyExpanded ? '收起商家回复' : '查看商家回复'}
+            </Button>
+            {replyExpanded && (
+              <div style={{
+                marginTop: '8px',
+                padding: '12px',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '4px'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1677ff' }}>
+                  <ShopOutlined /> {review.reply.shopName} 回复：
+                </div>
+                <div>{review.reply.content}</div>
+                <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                  {review.reply.createTime}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 互动操作 */}
         <div className="review-actions">
