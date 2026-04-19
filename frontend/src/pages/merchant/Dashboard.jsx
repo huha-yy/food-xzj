@@ -41,6 +41,7 @@ import {
   updateFoodStatus,
   getMerchantInfo,
   updateMerchantInfo,
+  updateMerchantStatus,
   getCurrentMerchant,
   getMerchantActivityList,
   createActivity,
@@ -295,6 +296,18 @@ function Dashboard() {
     setMerchantFormVisible(true)
   }
 
+  // 切换营业状态
+  const handleToggleStatus = async () => {
+    const newStatus = merchantInfo.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
+    try {
+      await updateMerchantStatus(merchantInfo.merchantId, newStatus)
+      message.success(newStatus === 'ACTIVE' ? '已开始营业' : '已暂停营业')
+      fetchCurrentMerchant()
+    } catch (error) {
+      message.error('操作失败')
+    }
+  }
+
   // 提交商家信息表单
   const handleMerchantSubmit = async () => {
     try {
@@ -531,9 +544,23 @@ function Dashboard() {
                 <Card
                   title="店铺信息"
                   extra={
-                    <Button type="primary" icon={<EditOutlined />} onClick={openMerchantForm}>
-                      编辑信息
-                    </Button>
+                    <Space>
+                      {merchantInfo?.status === 'ACTIVE' ? (
+                        <Popconfirm
+                          title="确定要暂停营业吗？"
+                          onConfirm={handleToggleStatus}
+                          okText="确定"
+                          cancelText="取消"
+                        >
+                          <Button danger>暂停营业</Button>
+                        </Popconfirm>
+                      ) : (
+                        <Tag color="red">已停业，如需恢复请联系管理员</Tag>
+                      )}
+                      <Button type="primary" icon={<EditOutlined />} onClick={openMerchantForm}>
+                        编辑信息
+                      </Button>
+                    </Space>
                   }
                   style={{ marginTop: 24 }}
                 >

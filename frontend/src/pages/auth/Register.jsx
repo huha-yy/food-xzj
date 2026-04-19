@@ -142,12 +142,10 @@ function Register() {
             <Form.Item
               name="role"
               initialValue="STUDENT"
-              rules={[{ required: true, message: '请选择角色' }]}
+              hidden
             >
-              <Select placeholder="请选择角色">
-                <Option value="STUDENT">🎓 学生</Option>
-                <Option value="MERCHANT">🏪 商家</Option>
-                <Option value="ADMIN">⚙️ 管理员</Option>
+              <Select>
+                <Option value="STUDENT">学生</Option>
               </Select>
             </Form.Item>
 

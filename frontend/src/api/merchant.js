@@ -21,3 +21,24 @@ export function getMerchantDetail(merchantId) {
   })
 }
 
+/**
+ * 商家入驻申请
+ */
+export function applyMerchant(data) {
+  return request({
+    url: '/merchants',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取当前登录商家信息
+ */
+export function getCurrentMerchant() {
+  return request({
+    url: '/merchants/current',
+    method: 'get'
+  })
+}
+

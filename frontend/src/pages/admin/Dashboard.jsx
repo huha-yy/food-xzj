@@ -90,7 +90,7 @@ function Dashboard() {
     current: 1,
     pageSize: 10,
     keyword: '',
-    auditStatus: undefined,
+    auditStatus: '',
     status: undefined
   })
   const [merchantDetailVisible, setMerchantDetailVisible] = useState(false)

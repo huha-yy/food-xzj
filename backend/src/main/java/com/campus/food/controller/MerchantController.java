@@ -84,11 +84,18 @@ public class MerchantController {
 
     @PutMapping("/{merchantId}/status")
     @Operation(summary = "商家状态管理")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MERCHANT')")
     public Result<Void> updateMerchantStatus(
             @PathVariable Long merchantId,
-            @RequestParam String status
+            @RequestParam String status,
+            @AuthenticationPrincipal SecurityUser securityUser
     ) {
+        // 商家只能暂停营业（DISABLED），不能自己恢复营业，恢复需由管理员操作
+        boolean isAdmin = securityUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin && "ACTIVE".equals(status)) {
+            throw new com.campus.food.exception.BusinessException(4000, "无权限执行此操作，恢复营业请联系管理员");
+        }
         merchantService.updateMerchantStatus(merchantId, status);
         return Result.success();
     }

@@ -15,7 +15,7 @@ function MerchantList() {
     current: 1,
     pageSize: 12,
     keyword: '',
-    auditStatus: undefined
+    auditStatus: 'APPROVED'
   })
   const navigate = useNavigate()
 

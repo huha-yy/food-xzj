@@ -52,6 +52,10 @@ const router = createBrowserRouter([
         element: lazyLoad(lazy(() => import('@/pages/user/PersonalCenter')))
       },
       {
+        path: 'merchant/apply',
+        element: lazyLoad(lazy(() => import('@/pages/merchant/MerchantApply')))
+      },
+      {
         path: 'merchant/dashboard',
         element: lazyLoad(lazy(() => import('@/pages/merchant/Dashboard')))
       },

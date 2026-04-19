@@ -1,0 +1,87 @@
+.merchant-apply-page {
+  max-width: 680px;
+  margin: 40px auto;
+  padding: 0 16px 60px;
+}
+
+.apply-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.apply-header .apply-icon {
+  font-size: 48px;
+  color: #ff7d45;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.apply-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+}
+
+.apply-header p {
+  color: #888;
+  margin: 0;
+}
+
+.apply-steps {
+  margin-bottom: 32px;
+}
+
+.apply-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cover-preview {
+  margin-top: 12px;
+  width: 200px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.cover-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apply-success {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.apply-success .success-icon {
+  font-size: 64px;
+  color: #52c41a;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.apply-success h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.apply-success p {
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.apply-success .hint {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.success-actions {
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}

@@ -77,7 +77,11 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
             reviewTagService.addTagsToReview(review.getId(), createReviewDTO.getTagIds());
         }
 
-        // 5. 返回评价ID
+        // 5. 更新菜品销量（评价数作为销量）
+        food.setSalesCount(food.getSalesCount() != null ? food.getSalesCount() + 1 : 1);
+        foodMapper.updateById(food);
+
+        // 6. 返回评价ID
         return review.getId();
     }
 
@@ -156,6 +160,18 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         LambdaQueryWrapper<ReviewImage> imageWrapper = new LambdaQueryWrapper<>();
         imageWrapper.eq(ReviewImage::getReviewId, reviewId);
         reviewImageMapper.delete(imageWrapper);
+
+        // 6. 更新菜品销量（减少1）
+        Food food = foodMapper.selectById(review.getFoodId());
+        if (food != null && food.getSalesCount() != null && food.getSalesCount() > 0) {
+            food.setSalesCount(food.getSalesCount() - 1);
+            foodMapper.updateById(food);
+        }
+
+        // 7. 如果删除的是已通过审核的评价，需要重新计算平均评分
+        if ("APPROVED".equals(review.getAuditStatus())) {
+            updateFoodRatingAvg(review.getFoodId());
+        }
     }
 
     @Override
@@ -211,7 +227,7 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         ReviewVO reviewVO = ReviewVO.builder()
                 .reviewId(review.getId())
                 .userId(review.getUserId())
-                .username(user != null ? user.getUsername() : "")
+                .username(userProfile != null && userProfile.getNickname() != null ? userProfile.getNickname() : "")
                 .avatar(userProfile != null ? userProfile.getAvatar() : "")
                 .foodId(review.getFoodId())
                 .foodName(food != null ? food.getName() : "")
@@ -307,22 +323,22 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         List<Long> merchantIds = resultPage.getRecords().stream()
                 .map(Review::getMerchantId).distinct().collect(Collectors.toList());
 
-        // 10. 批量查询
-        Map<Long, String> usernameMap = userIds.isEmpty() ? Map.of() :
-                userMapper.selectBatchIds(userIds).stream()
-                        .collect(Collectors.toMap(
-                                User::getId,
-                                user -> user.getUsername() != null ? user.getUsername() : "",
-                                (v1, v2) -> v1
-                        ));
-        Map<Long, String> avatarMap = userIds.isEmpty() ? Map.of() :
+        // 10. 批量查询用户昵称和头像
+        List<UserProfile> userProfiles = userIds.isEmpty() ? List.of() :
                 userProfileMapper.selectList(new LambdaQueryWrapper<UserProfile>()
-                                .in(UserProfile::getUserId, userIds)).stream()
-                        .collect(Collectors.toMap(
-                                UserProfile::getUserId,
-                                profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
-                                (v1, v2) -> v1
-                        ));
+                        .in(UserProfile::getUserId, userIds));
+        Map<Long, String> usernameMap = userProfiles.stream()
+                .collect(Collectors.toMap(
+                        UserProfile::getUserId,
+                        profile -> profile.getNickname() != null ? profile.getNickname() : "",
+                        (v1, v2) -> v1
+                ));
+        Map<Long, String> avatarMap = userProfiles.stream()
+                .collect(Collectors.toMap(
+                        UserProfile::getUserId,
+                        profile -> profile.getAvatar() != null ? profile.getAvatar() : "",
+                        (v1, v2) -> v1
+                ));
         Map<Long, String> foodNameMap = foodIds.isEmpty() ? Map.of() :
                 foodMapper.selectBatchIds(foodIds).stream()
                         .collect(Collectors.toMap(
@@ -424,9 +440,38 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         review.setAuditReason(auditDTO.getAuditReason());
         reviewMapper.updateById(review);
 
-        // 4. TODO: 更新菜品平均评分（评价通过后）
+        // 4. 更新菜品平均评分（评价通过后）
         if ("APPROVED".equals(auditDTO.getAuditStatus())) {
-            // 可以在这里更新菜品的平均评分
+            updateFoodRatingAvg(review.getFoodId());
+        }
+    }
+
+    /**
+     * 更新菜品的平均评分
+     */
+    private void updateFoodRatingAvg(Long foodId) {
+        // 查询该菜品所有已通过审核的评价
+        LambdaQueryWrapper<Review> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Review::getFoodId, foodId)
+                .eq(Review::getAuditStatus, "APPROVED")
+                .eq(Review::getIsDeleted, 0);
+        List<Review> approvedReviews = reviewMapper.selectList(wrapper);
+
+        // 计算平均评分
+        java.math.BigDecimal avgRating = java.math.BigDecimal.ZERO;
+        if (!approvedReviews.isEmpty()) {
+            double sum = approvedReviews.stream()
+                    .mapToInt(Review::getRating)
+                    .sum();
+            avgRating = java.math.BigDecimal.valueOf(sum / approvedReviews.size())
+                    .setScale(1, java.math.RoundingMode.HALF_UP);
+        }
+
+        // 更新菜品平均评分
+        Food food = foodMapper.selectById(foodId);
+        if (food != null) {
+            food.setRatingAvg(avgRating);
+            foodMapper.updateById(food);
         }
     }
 

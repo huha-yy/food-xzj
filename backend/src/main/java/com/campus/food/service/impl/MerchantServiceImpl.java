@@ -8,8 +8,10 @@ import com.campus.food.dto.CreateMerchantDTO;
 import com.campus.food.dto.MerchantQueryDTO;
 import com.campus.food.dto.UpdateMerchantDTO;
 import com.campus.food.entity.Merchant;
+import com.campus.food.entity.User;
 import com.campus.food.exception.BusinessException;
 import com.campus.food.mapper.MerchantMapper;
+import com.campus.food.mapper.UserMapper;
 import com.campus.food.service.MerchantService;
 import com.campus.food.vo.MerchantVO;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MerchantServiceImpl extends ServiceImpl<MerchantMapper, Merchant> implements MerchantService {
 
     private final MerchantMapper merchantMapper;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -164,10 +167,13 @@ public class MerchantServiceImpl extends ServiceImpl<MerchantMapper, Merchant> i
             lambdaQueryWrapper.like(Merchant::getShopName, merchantQueryDTO.getKeyword());
         }
 
-        // 4. 按审核状态筛选
-        if (merchantQueryDTO.getAuditStatus() != null) {
+        // 4. 按审核状态筛选：空字符串表示查全部（管理员），null时默认只返回已审核通过的商家（公开接口）
+        if (merchantQueryDTO.getAuditStatus() != null && !merchantQueryDTO.getAuditStatus().isEmpty()) {
             lambdaQueryWrapper.eq(Merchant::getAuditStatus, merchantQueryDTO.getAuditStatus());
+        } else if (merchantQueryDTO.getAuditStatus() == null) {
+            lambdaQueryWrapper.eq(Merchant::getAuditStatus, "APPROVED");
         }
+        // auditStatus 为空字符串时不过滤，查全部
 
         // 5. 按状态筛选
         if (merchantQueryDTO.getStatus() != null) {
@@ -214,8 +220,18 @@ public class MerchantServiceImpl extends ServiceImpl<MerchantMapper, Merchant> i
             throw new BusinessException(4006, "商家已审核，无法重复审核");
         }
 
-        // 3. 更新审核状态和理由
+        // 3. 更新审核状态
         merchant.setAuditStatus(auditStatus);
+
+        // 4. 审核通过则激活商家状态，并将用户角色更新为 MERCHANT
+        if ("APPROVED".equals(auditStatus)) {
+            merchant.setStatus("ACTIVE");
+            User user = userMapper.selectById(merchant.getUserId());
+            if (user != null) {
+                user.setRole("MERCHANT");
+                userMapper.updateById(user);
+            }
+        }
 
         // 5. 更新数据库
         merchantMapper.updateById(merchant);

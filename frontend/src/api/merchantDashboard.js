@@ -85,6 +85,17 @@ export function updateMerchantInfo(merchantId, data) {
   })
 }
 
+/**
+ * 切换店铺营业状态
+ */
+export function updateMerchantStatus(merchantId, status) {
+  return request({
+    url: `/merchants/${merchantId}/status`,
+    method: 'put',
+    params: { status }
+  })
+}
+
 // ========== 活动管理 ==========
 
 /**

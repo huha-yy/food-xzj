@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import { Form, Input, Button, message, Select } from 'antd'
+import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { login } from '@/api/auth'
 import './Auth.css'
-
-const { Option } = Select
 
 // 美食装饰图标
 const foodIcons = ['🍜', '🍕', '🍔', '🍣', '🍰', '🥗', '🍲', '🧁']
@@ -20,8 +18,8 @@ function Login() {
   const onFinish = async (values) => {
     try {
       setLoading(true)
-      const { username, password, role } = values
-      const response = await login({ username, password, role })
+      const { username, password } = values
+      const response = await login({ username, password })
 
       localStorage.setItem('token', response.token)
       localStorage.setItem('userInfo', JSON.stringify({
@@ -117,18 +115,6 @@ function Login() {
                 prefix={<LockOutlined />}
                 placeholder="密码"
               />
-            </Form.Item>
-
-            <Form.Item
-              name="role"
-              initialValue="STUDENT"
-              rules={[{ required: true, message: '请选择角色' }]}
-            >
-              <Select placeholder="请选择角色">
-                <Option value="STUDENT">🎓 学生</Option>
-                <Option value="MERCHANT">🏪 商家</Option>
-                <Option value="ADMIN">⚙️ 管理员</Option>
-              </Select>
             </Form.Item>
 
             <Form.Item>

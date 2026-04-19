@@ -18,7 +18,6 @@ function Home() {
   const [announcements, setAnnouncements] = useState([])
   const [activities, setActivities] = useState([])
   const [infoType, setInfoType] = useState('announcement')
-  const [searchKeyword, setSearchKeyword] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [activeTab, setActiveTab] = useState('hot')
   const navigate = useNavigate()
@@ -30,17 +29,22 @@ function Home() {
   const [activityTotal, setActivityTotal] = useState(0)
   const [infoLoading, setInfoLoading] = useState(false)
 
+  // 搜索结果独立状态
+  const [searchResults, setSearchResults] = useState([])
+  const [searchTotal, setSearchTotal] = useState(0)
+  const [searchPage, setSearchPage] = useState(1)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchLoading, setSearchLoading] = useState(false)
+
+  // 分类结果独立状态
+  const [categoryResults, setCategoryResults] = useState([])
+  const [categoryTotal, setCategoryTotal] = useState(0)
+  const [categoryPage, setCategoryPage] = useState(1)
+  const [categoryLoading, setCategoryLoading] = useState(false)
+
   useEffect(() => {
     fetchData()
   }, [])
-
-  useEffect(() => {
-    if (searchKeyword) {
-      handleSearch(searchKeyword)
-    } else if (selectedCategory) {
-      handleCategoryClick(selectedCategory)
-    }
-  }, [searchKeyword, selectedCategory])
 
   const fetchData = async () => {
     try {
@@ -96,43 +100,52 @@ function Home() {
     }
   }
 
-  const handleSearch = async (keyword) => {
-    if (!keyword.trim()) {
-      setActiveTab('hot')
-      return
-    }
-
-    try {
-      setLoading(true)
-      const data = await getFoodList({ keyword, current: 1, pageSize: 6 })
-      setRecommendFoods(data?.records || [])
-      setActiveTab('search')
-    } catch (error) {
-      console.error('搜索失败:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCategoryClick = async (categoryId) => {
-    if (selectedCategory === categoryId) {
-      // 取消选择，返回热门推荐
-      setSelectedCategory(null)
+  const handleSearch = async (keyword, page = 1) => {
+    if (!keyword || !keyword.trim()) {
+      setSearchResults([])
+      setSearchTotal(0)
       setSearchKeyword('')
       setActiveTab('hot')
       return
     }
-
     try {
-      setLoading(true)
+      setSearchLoading(true)
+      setSearchKeyword(keyword)
+      const data = await getFoodList({ keyword, current: page, pageSize: 6 })
+      setSearchResults(data?.records || [])
+      setSearchTotal(data?.total || 0)
+      setSearchPage(page)
+      setActiveTab('search')
+      setSelectedCategory(null)
+    } catch (error) {
+      console.error('搜索失败:', error)
+    } finally {
+      setSearchLoading(false)
+    }
+  }
+
+  const handleCategoryClick = async (categoryId, page = 1) => {
+    if (selectedCategory === categoryId && page === 1) {
+      setSelectedCategory(null)
+      setCategoryResults([])
+      setCategoryTotal(0)
+      setActiveTab('hot')
+      return
+    }
+    try {
+      setCategoryLoading(true)
       setSelectedCategory(categoryId)
-      const data = await getFoodList({ categoryId, current: 1, pageSize: 6 })
-      setRecommendFoods(data?.records || [])
+      const data = await getFoodList({ categoryId, current: page, pageSize: 6 })
+      setCategoryResults(data?.records || [])
+      setCategoryTotal(data?.total || 0)
+      setCategoryPage(page)
       setActiveTab('category')
+      setSearchResults([])
+      setSearchKeyword('')
     } catch (error) {
       console.error('获取分类菜品失败:', error)
     } finally {
-      setLoading(false)
+      setCategoryLoading(false)
     }
   }
 
@@ -234,7 +247,6 @@ function Home() {
               size="large"
               allowClear
               onSearch={handleSearch}
-              onChange={(e) => setSearchKeyword(e.target.value)}
               style={{ maxWidth: 500, width: '100%' }}
             />
           </div>
@@ -252,7 +264,9 @@ function Home() {
                 className="category-btn"
                 onClick={() => {
                   setSelectedCategory(null)
+                  setSearchResults([])
                   setSearchKeyword('')
+                  setCategoryResults([])
                   setActiveTab('hot')
                 }}
               >
@@ -378,10 +392,11 @@ function Home() {
           activeKey={activeTab}
           onChange={(key) => {
             setActiveTab(key)
-            if (key === 'hot') {
+            if (key === 'hot' || key === 'recommend') {
               setSelectedCategory(null)
+              setSearchResults([])
               setSearchKeyword('')
-              fetchData()
+              setCategoryResults([])
             }
           }}
           items={[
@@ -394,13 +409,12 @@ function Home() {
                 </span>
               ),
               children: (
-                <div key="hot-list">
-                  <List
-                    grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
-                    dataSource={hotFoods}
-                    renderItem={renderFoodCard}
-                  />
-                </div>
+                <List
+                  grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
+                  dataSource={hotFoods}
+                  renderItem={renderFoodCard}
+                  locale={{ emptyText: '暂无热门菜品' }}
+                />
               )
             },
             {
@@ -412,41 +426,64 @@ function Home() {
                 </span>
               ),
               children: (
-                <div key="recommend-list">
-                  <List
-                    grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
-                    dataSource={recommendFoods}
-                    renderItem={renderFoodCard}
-                  />
-                </div>
+                <List
+                  grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
+                  dataSource={recommendFoods}
+                  renderItem={renderFoodCard}
+                  locale={{ emptyText: '暂无推荐菜品' }}
+                />
               )
             },
-            {
+            ...(searchResults.length > 0 || activeTab === 'search' ? [{
               key: 'search',
-              label: '搜索结果',
+              label: `搜索"${searchKeyword}"`,
               children: (
-                <div key="search-list">
+                <Spin spinning={searchLoading}>
                   <List
                     grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
-                    dataSource={recommendFoods}
+                    dataSource={searchResults}
                     renderItem={renderFoodCard}
+                    locale={{ emptyText: '未找到相关菜品' }}
                   />
-                </div>
+                  {searchTotal > 6 && (
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                      <Pagination
+                        current={searchPage}
+                        pageSize={6}
+                        total={searchTotal}
+                        onChange={(page) => handleSearch(searchKeyword, page)}
+                        showTotal={(total) => `共 ${total} 条`}
+                      />
+                    </div>
+                  )}
+                </Spin>
               )
-            },
-            {
+            }] : []),
+            ...(categoryResults.length > 0 || activeTab === 'category' ? [{
               key: 'category',
-              label: '分类结果',
+              label: `分类结果`,
               children: (
-                <div key="category-list">
+                <Spin spinning={categoryLoading}>
                   <List
                     grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
-                    dataSource={recommendFoods}
+                    dataSource={categoryResults}
                     renderItem={renderFoodCard}
+                    locale={{ emptyText: '该分类暂无菜品' }}
                   />
-                </div>
+                  {categoryTotal > 6 && (
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                      <Pagination
+                        current={categoryPage}
+                        pageSize={6}
+                        total={categoryTotal}
+                        onChange={(page) => handleCategoryClick(selectedCategory, page)}
+                        showTotal={(total) => `共 ${total} 条`}
+                      />
+                    </div>
+                  )}
+                </Spin>
               )
-            }
+            }] : [])
           ]}
         />
 

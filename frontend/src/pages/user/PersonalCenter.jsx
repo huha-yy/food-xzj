@@ -26,7 +26,8 @@ import {
   UploadOutlined,
   CheckCircleFilled,
   LikeOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  ShopOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, updateUserInfo, updatePassword } from '@/api/user'
@@ -299,6 +300,11 @@ function PersonalCenter() {
             <Button icon={<LockOutlined />} onClick={openPasswordModal}>
               修改密码
             </Button>
+            {userInfo?.role === 'STUDENT' && (
+              <Button icon={<ShopOutlined />} onClick={() => navigate('/merchant/apply')}>
+                申请入驻
+              </Button>
+            )}
           </div>
         </div>
       </div>
